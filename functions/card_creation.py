@@ -97,7 +97,7 @@ def create_deck() -> list[dict[str, int| str]]:
         
        
     for i in deck:
-        print('CARTA: ', i, '\n')
+        print(f'Carta {i['name']} :  {i['card_ascii_art']} \n')
     
     return deck
 
