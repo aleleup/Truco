@@ -1,11 +1,12 @@
 from constants.constants import card_ascii_art
+from constants.emojis import * 
 def create_card_values(number: int,  type: str, value: int, envido_value: int) -> dict[str, int| str]:
     '''creats card dictonary by the params craeted'''
     emoji_store: dict[str, str] = {
-        'sword': chr(0x1F5E1),
-        'wood': chr(0x1FAB5),
-        'gold': chr(0x1F7E1),
-        'cup': chr(0x1F3C6),
+        'sword': SWORD_EMOJI,
+        'wood': WOOD_EMOJI,
+        'gold': GOLD_EMOJI,
+        'cup': CUP_EMOJI,
     } 
     return {
         'name': f'{number} {emoji_store[type]}',
@@ -96,8 +97,8 @@ def create_deck() -> list[dict[str, int| str]]:
             add_to_deck(type_list, card_num, i, envido_value, deck)
         
        
-    for i in deck:
-        print(f'Carta {i['name']} :  {i['card_ascii_art']} \n')
+    # for i in deck:
+    #     print(f'Carta {i['name']} :  {i['card_ascii_art']} \n')
     
     return deck
 
