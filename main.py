@@ -11,6 +11,7 @@ def render_truco() -> None:
     # display_text = tk.Label(root=root, value=constants['title'])
 
     deck = create_deck()
+    # print(deck)
     game_play(deck)
 
     # root.mainloop()

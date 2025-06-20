@@ -1,4 +1,4 @@
-from emojis import *
+from constants.emojis import *
 E = SWORD_EMOJI
 B = WOOD_EMOJI
 C =  CUP_EMOJI
@@ -153,7 +153,7 @@ card_ascii_art: dict[str, str] = {
 """, 
 
 
-    '1&gold': f"""
+    '1&cup': f"""
 ┌────────────┐
 │ 1 {C}       │
 │    ╭──╮    │
@@ -165,7 +165,7 @@ card_ascii_art: dict[str, str] = {
 │       1 {C} │
 └────────────┘
 """,
-    '1&cup': f"""
+    '1&gold': f"""
 ┌────────────┐
 │ 1 {G}       │
 │            │
@@ -236,7 +236,7 @@ card_ascii_art: dict[str, str] = {
 │  \\____//   │
 │   CABALLO  │
 │            │
-│        1 {E} │
+│       11 {E} │
 └────────────┘
 """, 
     '11&wood': f"""
@@ -248,7 +248,7 @@ card_ascii_art: dict[str, str] = {
 │  \\____//   │
 │   CABALLO  │
 │            │
-│        1 {B} │
+│       11 {B} │
 └────────────┘
 """, 
     '11&cup': f"""
@@ -260,7 +260,7 @@ card_ascii_art: dict[str, str] = {
 │  \\____//   │
 │   CABALLO  │
 │            │
-│       1 {C} │
+│      11 {C} │
 └────────────┘
 """, 
     '11&gold': f"""
@@ -285,7 +285,7 @@ card_ascii_art: dict[str, str] = {
 │    SOTA    │
 │            │
 │            │
-│        0 {E} │
+│       10 {E} │
 └────────────┘
 """, 
     '10&wood': f"""
@@ -297,7 +297,7 @@ card_ascii_art: dict[str, str] = {
 │    SOTA    │
 │            │
 │            │
-│        0 {B} │
+│       10 {B} │
 └────────────┘
 """, 
     '10&cup': f"""
@@ -309,7 +309,7 @@ card_ascii_art: dict[str, str] = {
 │    SOTA    │
 │            │
 │            │
-│       0 {C} │
+│      10 {C} │
 └────────────┘
 """, 
     '10&gold': f"""
