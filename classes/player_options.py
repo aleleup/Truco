@@ -21,7 +21,7 @@ class PlayerOptions:
             'vale_cuatro': 4
         },
 
-    def _pop_lowest_val(l:list, prop:str) -> None:
+    def _pop_lowest_val(self, l:list, prop:str) -> None:
         index: int = 0
         comp: int = 0
         for i in range(len(l)):
@@ -50,7 +50,6 @@ class PlayerOptions:
             i+=1
         if same_type_list:
             if len(same_type_list) == len(self.cards):
-                print(same_type_list, 'envido_value')
                 self._pop_lowest_val(same_type_list, 'envido_value')
             total_envido = 0
             for card in same_type_list:
