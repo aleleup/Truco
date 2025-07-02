@@ -45,15 +45,15 @@ def game_play(deck: list, ):
         game_num+=1
         cards_of_the_hand: dict[str, list] = handle_cards_based_on_who_is_hand(player_id, bot_id, game_num, deck)
         player_options.cards = cards_of_the_hand['players_cards']
-        bot_options.cards = cards_of_the_hand
+        bot_options.cards = cards_of_the_hand['bots_cards']
        
-        
 
 
-        game_instance: int = 0
+
+        hand: int = 0
         #envido instance:
         if len(player_options.cards) == len(bot_options.cards) and len(player_options.cards) == 3:
-            game_instance = 1
+            hand = 1
             envidos_calls: dict[str, int] = {
                 'Envido': 0,
                 'real_envido': 0,
@@ -61,7 +61,8 @@ def game_play(deck: list, ):
             }
             # play_envido(player_options, bot_options)
         if len(player_options.cards) == len(bot_options.cards) and len(player_options.cards) == 2:
-            game_instance = 2
+            hand = 2
         if len(player_options.cards) == len(bot_options.cards) and len(player_options.cards) == 1:
-            game_instance = 3
+            hand = 3
 
+        break

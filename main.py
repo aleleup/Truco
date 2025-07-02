@@ -1,6 +1,7 @@
 import tkinter as tk
 from functions.card_creation import create_deck
-from functions.game_play import game_play
+# from functions.game_play import game_play
+from test_functionalities.test_bot import test_envido_bot
 
 def render_truco() -> None:
     '''Orquestador e inicializador del programa'''
@@ -12,8 +13,8 @@ def render_truco() -> None:
 
     deck = create_deck()
     # print(deck)
-    game_play(deck)
-
+    # game_play(deck)
+    test_envido_bot(deck)
     # root.mainloop()
 
 

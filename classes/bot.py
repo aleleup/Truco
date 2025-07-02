@@ -5,33 +5,86 @@ class Bot(PlayerOptions):
     def __init__(self, cards, player_num, game_num, falta_envido_val):
         super().__init__(cards, player_num, game_num, falta_envido_val)
         self.SMART_ENVIDO: int = 22
-        self.NEED_ENVIDO: int = 25
+        self.NEED_ENVIDO: int = 27
+        self.ENVIDO = 'envido'
+        self.REAL_ENVIDO = 'real_envido'
+        self.FALTA_ENVDO = 'falta_envido'
+
+    def __handle_not_smart_to_envido(self, envidos_calls_history: dict[str, int]) -> str:
+        '''Depending on the ask_probability the bot ask whitch envido will select to lie'''
+        ask_probability: int = randint(1, 100)
+        print("ASKING PROBABILITY", ask_probability)
+
+        if ask_probability <= 75: return ''
+
+        if ask_probability < 94 and not (
+            envidos_calls_history['envido'] < 2 or 
+            envidos_calls_history['real_envido'] or 
+            envidos_calls_history['falta_envido']):
+            #TODO add return message, something like bet_on_table:str -> [envido, real_envido, falta_envido]
+            envidos_calls_history['envido'] +=1
+            return self.ENVIDO
+        elif ask_probability < 98 and not (envidos_calls_history['real_envido'] or envidos_calls_history['falta_envido']):
+            envidos_calls_history['real_envido']+=1
+            return self.REAL_ENVIDO
+        else:
+            envidos_calls_history['falta_envido'] = 1
+            return self.FALTA_ENVDO
+
+    def __handle_smart_envido(self,envido_calls_history: dict[str, int]) -> str:
+        '''Keep it safe'''
+        envido_calls_history['envido'] +=1
+        return self.ENVIDO
     
+    def __handle_grate_envido(self,envido_calls_history: dict[str, int]) -> str:
+        '''Based on points and probabilities, the bot will ask a great bet, go fishing or keep it safe'''
+        ask_probability: int = randint(1,100)
+        print("ASKING PROBABILITY", ask_probability)
 
-    def asks_envido(self, game_instance: int, envidos_calls_history: dict[str, int], bet_on_table: str):
-        '''Evaluate if there are conditions to ask envido or not and depending on what has been asked upload the bet. 
-        '''
+        if ask_probability > 80 and not (envido_calls_history['envido'] or envido_calls_history['real_envido'] or  envido_calls_history['falta_envido'] ):
+            print("Gonna fish")
+            return '' ##GOES FISHING
+
+        print('calls envido')
+
+        if envido_calls_history['envido'] == 1 and (self.total_envido < 30 or ask_probability <= 33):
+            #33% chances of asking envido once it has been called
+            envido_calls_history['envido'] +=1
+            return self.ENVIDO
+        print('calls real_envido ')
+        if not(envido_calls_history['real_envido']) and (self.total_envido < 32 or ask_probability <= 66):
+            # 33% chances of asking real_envido (doesn't matter what's the actual bet)
+            envido_calls_history['real_envido'] += 1
+            return self.REAL_ENVIDO
+        
+        print('calls faltaenvido')
+        if not(envido_calls_history['falta_envido']) and ask_probability <= 80: ## has envido >= 32
+            envido_calls_history['falta_envido'] +=1
+            return self.FALTA_ENVDO
+        
+        print("did not enter any options")
+        ##Handler to keep it safe
+        envido_calls_history['envido'] +=1
+        return self.ENVIDO
+        
+        
+
+    def asks_envido(self, game_instance: int, envidos_calls_history: dict[str, int], bet_on_table: str) -> str:
+        '''Evaluate if there are conditions to ask envido or not and depending on what has been asked upload the bet.'''
         can_even_ask_envido: bool = self.is_hand or game_instance == 1 
-        is_smart_to_ask: bool = self.total_envido > self.SMART_ENVIDO and self.total_envido < self.NEED_ENVIDO
-
+        is_smart_to_ask: bool = self.total_envido >= self.SMART_ENVIDO and self.total_envido < self.NEED_ENVIDO
+        is_grate_envido: bool = self.total_envido >= self.NEED_ENVIDO
         if not can_even_ask_envido: return 
 
         if not is_smart_to_ask:
             #The bot can lie, it can be a sutil or an absurd bet asked, depending on the probabilities.
-            ask_porobability: int = randint(1, 100)
-            if ask_porobability < 75: # 75% chances he'll not ask anything
-                return
-            elif ask_porobability < 94 and not (
-                envidos_calls_history['envido'] < 2 or 
-                envidos_calls_history['real_envido'] or 
-                envidos_calls_history['falta_envido']):
-                #TODO add return message, something like bet_on_table:str -> [envido, real_envido, falta_envido]
-                envidos_calls_history['envido'] +=1
-            elif ask_porobability < 97 and not (envidos_calls_history['real_envido'] or envidos_calls_history['falta_envido']):
-                envidos_calls_history['real_envido']+=1
-
-            else:
-                envidos_calls_history['falta_envido'] = 1
+            return self.__handle_not_smart_to_envido( envidos_calls_history)
+        if is_smart_to_ask:
+            return self.__handle_smart_envido(envidos_calls_history)
+        if is_grate_envido:
+            return self.__handle_grate_envido(envidos_calls_history)
+            
+           
 
 
         
