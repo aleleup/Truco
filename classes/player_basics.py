@@ -2,7 +2,7 @@
 # from functions.deal_cards import handle_cards
 from functions.start_up_functions import calc_envido
 
-class PlayerOptions:
+class PlayerBasics:
     def __init__(self, cards: list[dict], player_num: int, game_num: int, falta_envido_val:int):
         self.cards = cards
         self.player_num = player_num
@@ -58,6 +58,8 @@ class PlayerOptions:
         self.total_envido = total_envido
 
 
+    def ask_envido(self, game_instance: int, envidos_calls_history: dict[str, int], bet_on_table: str) -> str:
+        pass
 
 
 

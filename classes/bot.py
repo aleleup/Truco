@@ -1,6 +1,6 @@
 from random import randint
-from classes.player_options import PlayerOptions
-class Bot(PlayerOptions):
+from classes.player_basics import PlayerBasics
+class Bot(PlayerBasics):
     '''Handle, with probability, the way the bot acts in the game using random.randint'''
     def __init__(self, cards, player_num, game_num, falta_envido_val):
         super().__init__(cards, player_num, game_num, falta_envido_val)
@@ -18,13 +18,13 @@ class Bot(PlayerOptions):
         if ask_probability <= 75: return ''
 
         if ask_probability < 94 and not (
-            envidos_calls_history['envido'] < 2 or 
-            envidos_calls_history['real_envido'] or 
-            envidos_calls_history['falta_envido']):
-            #TODO add return message, something like bet_on_table:str -> [envido, real_envido, falta_envido]
+            envidos_calls_history['envido'] < 2 or envidos_calls_history['real_envido'] or envidos_calls_history['falta_envido']
+        ):
             envidos_calls_history['envido'] +=1
             return self.ENVIDO
-        elif ask_probability < 98 and not (envidos_calls_history['real_envido'] or envidos_calls_history['falta_envido']):
+        elif ask_probability < 98 and not (
+            envidos_calls_history['real_envido'] or envidos_calls_history['falta_envido']
+        ):
             envidos_calls_history['real_envido']+=1
             return self.REAL_ENVIDO
         else:

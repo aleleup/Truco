@@ -1,7 +1,7 @@
 from random import randint
 from functions.deal_cards import handle_cards
 from functions.start_up_functions import calc_envido
-from classes.player_options import PlayerOptions
+from classes.player_basics import PlayerBasics
 from classes.bot import Bot
 def game_stop(player_points: int, pc_points: int) -> bool:
     if player_points == 30 or pc_points == 30:
@@ -38,7 +38,7 @@ def game_play(deck: list, ):
     pc_points: int = 0
 
     # instance players and methods here.
-    player_options = PlayerOptions([], player_id, game_num, 30)
+    player_options = PlayerBasics([], player_id, game_num, 30)
     bot_options = Bot([], bot_id, game_num, 30)
 
     while not game_stop(player_points, pc_points):
