@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QApplication, QWidget, QLabel
 from PyQt6.QtCore import Qt
 from functions.card_creation import create_deck
 # from functions.game_play import game_play
-from test_functionalities.test_bot import test_envido_bot
+from test_functionalities.test_classes_functionalities import test_envido_bot, test_player
 
 def render_truco() -> None:
     '''Orquestador e inicializador del programa'''
@@ -16,7 +16,8 @@ def render_truco() -> None:
     deck = create_deck()
     # print(deck)
     # game_play(deck)
-    test_envido_bot(deck)
+    # test_envido_bot(deck)
+    test_player(deck)
     # root.mainloop()
 
 
@@ -58,5 +59,5 @@ def create_hello_window():
     # This keeps the application running until the user closes the window.
     sys.exit(app.exec())
 
-if __name__ == "__main__":
-    create_hello_window()
+# if __name__ == "__main__":
+#     create_hello_window()

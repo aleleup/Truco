@@ -65,7 +65,7 @@ class Bot(PlayerBasics):
 
         
 
-    def asks_envido(self, game_instance: int, envidos_calls_history: dict[str, int], bet_on_table: str) -> str:
+    def ask_envido(self, game_instance: int, envidos_calls_history: dict[str, int], bet_on_table: str) -> str:
         '''Evaluate if there are conditions to ask envido or not and depending on what has been asked upload the bet.'''
         can_even_ask_envido: bool = game_instance == 1 
         is_smart_to_ask: bool = self.total_envido >= self.SMART_ENVIDO and self.total_envido < self.NEED_ENVIDO
