@@ -24,7 +24,7 @@ def test_envido_bot(deck):
 
 def test_player(deck):
     envidos_calls: dict[str, int] = {
-                'envido': 2,
+                'envido': 1,
                 'real_envido': 0,
                 'falta_envido': 0
             }
@@ -36,3 +36,39 @@ def test_player(deck):
     print(player.total_envido)
     print(player.ask_envido(game_instance, envidos_calls, 'envido'))
 
+
+
+def test_player_to_bot_envido(deck):
+    
+
+    player = Player([],0, 0, 30 )
+    bot = Bot([],0, 0, 30 )
+    
+    game_instance = 1
+    i:int = 0
+    while i <= 10:
+        cards_in_use = []
+        player.cards = handle_cards(deck, cards_in_use )
+        bot.cards = handle_cards(deck, cards_in_use )
+
+        player.calc_envido()
+        bot.calc_envido()
+        envidos_calls: dict[str, int] = {
+                'envido': 0,
+                'real_envido': 0,
+                'falta_envido': 0
+            }
+        bet_on_table:str = ''
+        print('################')
+        while bet_on_table not in ['accept', 'dont_accept']:
+            bet_on_table = bot.ask_envido(game_instance, envidos_calls, bet_on_table)
+
+            print(f"bot says {bet_on_table}")
+            if bet_on_table in ['accept', 'dont_accept']: break 
+
+            print("player envido", player.total_envido)
+            bet_on_table = player.ask_envido(game_instance, envidos_calls, bet_on_table)
+        print('###############################################################')
+        print(f'player_envido: {player.total_envido}. bot_envido: {bot.total_envido}')
+        
+        i+=1    

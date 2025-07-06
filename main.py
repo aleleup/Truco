@@ -3,7 +3,7 @@ from PyQt6.QtWidgets import QApplication, QWidget, QLabel
 from PyQt6.QtCore import Qt
 from functions.card_creation import create_deck
 # from functions.game_play import game_play
-from test_functionalities.test_classes_functionalities import test_envido_bot, test_player
+from test_functionalities.test_classes_functionalities import test_envido_bot, test_player, test_player_to_bot_envido
 
 def render_truco() -> None:
     '''Orquestador e inicializador del programa'''
@@ -17,9 +17,9 @@ def render_truco() -> None:
     # print(deck)
     # game_play(deck)
     # test_envido_bot(deck)
-    test_player(deck)
+    # test_player(deck)
     # root.mainloop()
-
+    test_player_to_bot_envido(deck)
 
 render_truco()
 

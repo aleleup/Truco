@@ -5,10 +5,7 @@ class Player(PlayerBasics):
         super().__init__(cards, player_num, game_num, falta_envido_val)
 
     
-    def __eval_and_delet_prop(self, envidos_calls_history:dict[str, int], res:dict[int, str],  i:int, vlw:int ):
-        '''deletes item from res depending on it;s value'''
-        if envidos_calls_history[res[i]] == vlw:
-            del res[i]
+   
     def __evaluate_envido_options_based_on_calls(self, envidos_calls_history: dict[str, int], bet_on_table: str) -> dict[int, str]:
         '''deletes envido item from res if it completed it`s total calls'''
 
@@ -18,13 +15,21 @@ class Player(PlayerBasics):
             2: 'real_envido',
             3: 'falta_envido',
         }
-        self.__eval_and_delet_prop(envidos_calls_history, res, 1, 2)
-        self.__eval_and_delet_prop(envidos_calls_history, res, 2, 1)
-        self.__eval_and_delet_prop(envidos_calls_history, res, 3, 2)
-    
+        if bet_on_table:
+            del res[0]
+        if envidos_calls_history['envido'] == 2:
+            del res[1]
+        if envidos_calls_history['real_envido']:
+            if 1 in res: del res[1]
+            del res[2]
+        if envidos_calls_history['falta_envido']:
+            if 1 in res: del res[1]
+            if 2 in res: del res[2]
+            del res[3]
+
         if bet_on_table: 
-            res[3] = "accept"
-            res[4] = "dont_accept"
+            res[4] = "accept"
+            res[5] = "dont_accept"
 
         return res
 
@@ -38,7 +43,7 @@ class Player(PlayerBasics):
         )
         
     
-    def ask_envido(self, game_instance, envidos_calls_history, bet_on_table):
+    def ask_envido(self, game_instance: int, envidos_calls_history: dict[str, int], bet_on_table: str):
         '''TODO Change to visual interface once it's finished the envido logic
             Now handle via terminal.
         '''
@@ -46,4 +51,6 @@ class Player(PlayerBasics):
         #1st evaluate the envido options based on the calls history
         actual_envido_options: dict[int, str] = self.__evaluate_envido_options_based_on_calls(envidos_calls_history, bet_on_table)
         user_response:int = self.__display_options(actual_envido_options)
+        if actual_envido_options[user_response] in envidos_calls_history: #User selected [envido, real_envido, falta_envido] and not [accept, dont_accept]
+            envidos_calls_history[actual_envido_options[user_response]] =+ 1
         return actual_envido_options[user_response]
