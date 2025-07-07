@@ -21,7 +21,7 @@ class Bot(PlayerBasics):
         if self.is_bet_on_table: return self.DONT_ACCEPT
 
 
-        if ask_probability <= 75: return ''
+        if ask_probability <= 75: return None
 
         if ask_probability < 94 and not (
             envidos_calls_history['envido'] < 2 or envidos_calls_history['real_envido'] or envidos_calls_history['falta_envido']
@@ -52,7 +52,7 @@ class Bot(PlayerBasics):
 
         if ask_probability > 80 and not (self.is_bet_on_table):
             # print("GOES FISHING")
-            return '' 
+            return None 
         
         if envido_calls_history['envido'] == 1 and (self.total_envido < 30 or ask_probability <= 33):
             #33% chances of asking envido once it has been called

@@ -60,6 +60,8 @@ def test_player_to_bot_envido(deck):
             }
         bet_on_table:str = ''
         print('################')
+
+
         while bet_on_table not in ['accept', 'dont_accept']:
             bet_on_table = bot.ask_envido(game_instance, envidos_calls, bet_on_table)
 
@@ -70,5 +72,11 @@ def test_player_to_bot_envido(deck):
             bet_on_table = player.ask_envido(game_instance, envidos_calls, bet_on_table)
         print('###############################################################')
         print(f'player_envido: {player.total_envido}. bot_envido: {bot.total_envido}')
+
+        if bet_on_table == 'accept':
+            if bot.total_envido >= player.total_envido:
+                bot.add_envido_points(envidos_calls)
+            else: player.add_envido_points(envidos_calls)
+        print(f"ENVIDO POINTS:  player -> {player.points}; bot -> {bot.points}")
         
         i+=1    

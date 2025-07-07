@@ -1,7 +1,3 @@
-# from random import randint
-# from functions.deal_cards import handle_cards
-from functions.start_up_functions import calc_envido
-
 class PlayerBasics:
     def __init__(self, cards: list[dict], player_num: int, game_num: int, falta_envido_val:int):
         self.points: int = 0
@@ -11,16 +7,16 @@ class PlayerBasics:
         self.falta_envido_val = falta_envido_val
         self.total_envido: int = 0
         self.is_hand: bool =  True if game_num %2 == player_num else False    
-        self.envido_options: dict[str, int] = {
+        self.envido_points: dict[str, int] = {
             'envido': 2,
             'real_envido': 3,
             'falta_envido': falta_envido_val
-        },
-        self.truco_options: dict[str, int] = {
+        }
+        self.truco_points : dict[str, int] = {
             'truco': 2,  ## Only truco available
             're_truco': 3,
             'vale_cuatro': 4
-        },
+        }
 
     def _pop_lowest_val(self, l:list, prop:str) -> None:
         index: int = 0
@@ -63,9 +59,15 @@ class PlayerBasics:
         pass
 
 
+    def add_envido_points(self, bet_calls_history: dict[str, int]) -> None:
+        if bet_calls_history['falta_envido']: 
+            self.points += self.falta_envido_val
+            return
+        
+        for bet in bet_calls_history:
+            # print(self.envido_points, self.truco_points ,bet_calls_history, bet)
+            self.points += self.envido_points[bet] * bet_calls_history[bet]
 
-
-
-
-
-
+    def add_truco_points(self, bet_calls_history: dict[str, int]) -> None:
+        for bet in bet_calls_history:
+            self.points += self.truco_points[bet]  * bet_calls_history[bet]

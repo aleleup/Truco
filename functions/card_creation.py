@@ -1,6 +1,8 @@
 from constants.constants import card_ascii_art
 from constants.emojis import * 
-def create_card_values(number: int,  type: str, value: int, envido_value: int) -> dict[str, int| str]:
+from constants.types import *
+
+def create_card_values(number: int,  type: str, value: int, envido_value: int) -> Card:
     '''creats card dictonary by the params craeted'''
     emoji_store: dict[str, str] = {
         'sword': SWORD_EMOJI,
@@ -43,11 +45,11 @@ def calc_envido_value(card_num: int) -> int:
         return 0
     return card_num   
 
-def add_to_deck(type_list: list[str], card_num:int, card_value: int, envido_value: int, deck: list):
+def add_to_deck(type_list: list[str], card_num:int, card_value: int, envido_value: int, deck: Deck):
     for type in type_list:
                 deck.append(create_card_values(card_num, type, card_value, envido_value)) 
 
-def create_deck() -> list[dict[str, int| str]]:
+def create_deck() -> Deck:
     '''logic_vals of cards:
         1 swrd == 14;
         1 wdd == 13;
@@ -68,7 +70,7 @@ def create_deck() -> list[dict[str, int| str]]:
     i'll have no other than hardocode the value.
 
     '''
-    deck: list = []
+    deck: Deck = []
     for i in range(1, 15):
         card_num: int = calc_card_num(i)
         envido_value: int = calc_envido_value(card_num)
@@ -96,9 +98,6 @@ def create_deck() -> list[dict[str, int| str]]:
             type_list: list = ['sword']
             add_to_deck(type_list, card_num, i, envido_value, deck)
         
-       
-    # for i in deck:
-    #     print(f'Carta {i['name']} :  {i['card_ascii_art']} \n')
     
     return deck
 
