@@ -73,14 +73,13 @@ class Bot(PlayerBasics):
 
         
 
-    def ask_envido(self, game_instance: int, envidos_calls_history: dict[str, int], bet_on_table: str):
+    def ask_envido(self, envidos_calls_history: dict[str, int], bet_on_table: str):
         '''Evaluate if there are conditions to ask envido or not and depending on what has been asked upload the bet.'''
-        can_even_ask_envido: bool = game_instance == 1 
         is_smart_to_ask: bool = self.total_envido >= self.SMART_ENVIDO and self.total_envido < self.NEED_ENVIDO
         is_grate_envido: bool = self.total_envido >= self.NEED_ENVIDO
         self.is_bet_on_table = bool(bet_on_table)
         print(self.is_bet_on_table)
-        if not can_even_ask_envido: return 
+        
 
         if not (is_smart_to_ask or is_grate_envido):
             #The bot can lie, it can be a sutil or an absurd bet asked, depending on the probabilities.

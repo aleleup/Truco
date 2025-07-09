@@ -39,15 +39,15 @@ class Player(PlayerBasics):
             TODO: Change to GUIs managment
         '''
         return int(
-            input(f"SELECT AN OPTION {envido_options}" )
+            input(f"PLAYER ENVIDO: {self.total_envido}. SELECT AN OPTION {envido_options}: " )
         )
         
     
-    def ask_envido(self, game_instance: int, envidos_calls_history: dict[str, int], bet_on_table: str):
+    def ask_envido(self, envidos_calls_history: dict[str, int], bet_on_table: str):
         '''TODO Change to visual interface once it's finished the envido logic
             Now handle via terminal.
         '''
-        if game_instance != 1: return
+        
         #1st evaluate the envido options based on the calls history
         actual_envido_options: dict[int, str] = self.__evaluate_envido_options_based_on_calls(envidos_calls_history, bet_on_table)
         user_response:int = self.__display_options(actual_envido_options)

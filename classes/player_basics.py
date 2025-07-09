@@ -7,12 +7,12 @@ class PlayerBasics:
         self.falta_envido_val = falta_envido_val
         self.total_envido: int = 0
         self.is_hand: bool =  True if game_num %2 == player_num else False    
-        self.envido_points: dict[str, int] = {
+        self.envido_points_values: dict[str, int] = {
             'envido': 2,
             'real_envido': 3,
             'falta_envido': falta_envido_val
         }
-        self.truco_points : dict[str, int] = {
+        self.truco_points_values : dict[str, int] = {
             'truco': 2,  ## Only truco available
             're_truco': 3,
             'vale_cuatro': 4
@@ -55,10 +55,14 @@ class PlayerBasics:
         self.total_envido = total_envido
 
 
-    def ask_envido(self, game_instance: int, envidos_calls_history: dict[str, int], bet_on_table: str) -> str:
+    def ask_envido(self, envidos_calls_history: dict[str, int], bet_on_table: str) -> str:
         pass
 
-
+    
+    def add_unwanted_envido_points(self, envido_calls_history: dict[str, int])-> None:
+        for key in envido_calls_history:
+            if envido_calls_history[key]: self.points += envido_calls_history[key]
+    
     def add_envido_points(self, bet_calls_history: dict[str, int]) -> None:
         if bet_calls_history['falta_envido']: 
             self.points += self.falta_envido_val
@@ -66,8 +70,8 @@ class PlayerBasics:
         
         for bet in bet_calls_history:
             # print(self.envido_points, self.truco_points ,bet_calls_history, bet)
-            self.points += self.envido_points[bet] * bet_calls_history[bet]
+            self.points += self.envido_points_values[bet] * bet_calls_history[bet]
 
     def add_truco_points(self, bet_calls_history: dict[str, int]) -> None:
         for bet in bet_calls_history:
-            self.points += self.truco_points[bet]  * bet_calls_history[bet]
+            self.points += self.truco_points_values[bet]  * bet_calls_history[bet]

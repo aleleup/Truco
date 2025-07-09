@@ -2,11 +2,11 @@ import sys
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel
 from PyQt6.QtCore import Qt
 from functions.card_creation import create_deck
-# from functions.game_play import game_play
+from functions.game_play import game_play
 from test_functionalities.test_classes_functionalities import test_envido_bot, test_player, test_player_to_bot_envido
 
 def render_truco() -> None:
-    '''Orquestador e inicializador del programa'''
+    '''Orquestator and renderer of the game'''
 
     # root = tk.Tk()
     # root.geometry('700x500')
@@ -15,11 +15,11 @@ def render_truco() -> None:
 
     deck = create_deck()
     # print(deck)
-    # game_play(deck)
+    game_play(deck)
     # test_envido_bot(deck)
     # test_player(deck)
     # root.mainloop()
-    test_player_to_bot_envido(deck)
+    # test_player_to_bot_envido(deck)
 
 render_truco()
 
