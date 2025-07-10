@@ -10,19 +10,19 @@ class Player(PlayerBasics):
         '''deletes envido item from res if it completed it`s total calls'''
 
         res: dict[int, str] = {
-            0:'',
-            1: 'envido',
-            2: 'real_envido',
-            3: 'falta_envido',
+            0: self.PASS,
+            1: self.ENVIDO,
+            2: self.REAL_ENVIDO,
+            3: self.FALTA_ENVDO,
         }
         if bet_on_table:
             del res[0]
-        if envidos_calls_history['envido'] == 2:
+        if envidos_calls_history[self.ENVIDO] == 2:
             del res[1]
-        if envidos_calls_history['real_envido']:
+        if envidos_calls_history[self.REAL_ENVIDO]:
             if 1 in res: del res[1]
             del res[2]
-        if envidos_calls_history['falta_envido']:
+        if envidos_calls_history[self.FALTA_ENVDO]:
             if 1 in res: del res[1]
             if 2 in res: del res[2]
             del res[3]
@@ -51,6 +51,12 @@ class Player(PlayerBasics):
         #1st evaluate the envido options based on the calls history
         actual_envido_options: dict[int, str] = self.__evaluate_envido_options_based_on_calls(envidos_calls_history, bet_on_table)
         user_response:int = self.__display_options(actual_envido_options)
-        if actual_envido_options[user_response] in envidos_calls_history: #User selected [envido, real_envido, falta_envido] and not [accept, dont_accept]
-            envidos_calls_history[actual_envido_options[user_response]] =+ 1
+        if actual_envido_options[user_response] in envidos_calls_history:
+            print(envidos_calls_history[actual_envido_options[user_response]]) #User selected [envido, real_envido, falta_envido] and not [accept, dont_accept]
+            envidos_calls_history[actual_envido_options[user_response]] += 1
         return actual_envido_options[user_response]
+    
+
+
+    # def play_card(self, game_num: int, envido_calls_history: dict[str, int], truco_calls_history: dict[str, int], bet_on_table:str):
+    #    if  self._in_envido_game(envido_calls_history):

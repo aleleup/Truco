@@ -6,11 +6,6 @@ class Bot(PlayerBasics):
         super().__init__(cards, player_num, game_num, falta_envido_val)
         self.SMART_ENVIDO: int = 22
         self.NEED_ENVIDO: int = 27
-        self.ENVIDO: str = 'envido'
-        self.REAL_ENVIDO: str = 'real_envido'
-        self.FALTA_ENVDO: str = 'falta_envido'
-        self.ACCEPT: str = 'accept'
-        self.DONT_ACCEPT: str = 'dont_accept'
         self.is_bet_on_table:bool = False
         
     def __handle_not_smart_to_envido(self, envidos_calls_history: dict[str, int]) -> str:
@@ -20,21 +15,20 @@ class Bot(PlayerBasics):
         
         if self.is_bet_on_table: return self.DONT_ACCEPT
 
-
-        if ask_probability <= 75: return None
+        if ask_probability <= 75 and not self.is_bet_on_table: return self.PASS
 
         if ask_probability < 94 and not (
-            envidos_calls_history['envido'] < 2 or envidos_calls_history['real_envido'] or envidos_calls_history['falta_envido']
+            envidos_calls_history[self.ENVIDO] < 2 or envidos_calls_history[self.REAL_ENVIDO] or envidos_calls_history[self.FALTA_ENVDO]
         ):
-            envidos_calls_history['envido'] +=1
+            envidos_calls_history[self.ENVIDO] +=1
             return self.ENVIDO
         elif ask_probability < 98 and not (
-            envidos_calls_history['real_envido'] or envidos_calls_history['falta_envido']
+            envidos_calls_history[self.REAL_ENVIDO] or envidos_calls_history[self.FALTA_ENVDO]
         ):
-            envidos_calls_history['real_envido']+=1
+            envidos_calls_history[self.REAL_ENVIDO]+=1
             return self.REAL_ENVIDO
         else:
-            envidos_calls_history['falta_envido'] = 1
+            envidos_calls_history[self.FALTA_ENVDO] = 1
             return self.FALTA_ENVDO
 
     def __handle_smart_envido(self,envido_calls_history: dict[str, int]) -> str:
@@ -42,7 +36,7 @@ class Bot(PlayerBasics):
         if self.is_bet_on_table:
             if self.total_envido >= 25: return self.ACCEPT
             return self.DONT_ACCEPT
-        envido_calls_history['envido'] +=1
+        envido_calls_history[self.ENVIDO] +=1
         return self.ENVIDO
     
     def __handle_grate_envido(self,envido_calls_history: dict[str, int]) -> str:
@@ -54,21 +48,25 @@ class Bot(PlayerBasics):
             # print("GOES FISHING")
             return None 
         
-        if envido_calls_history['envido'] == 1 and (self.total_envido < 30 or ask_probability <= 33):
+        if envido_calls_history[self.ENVIDO] == 1 and not (
+        envido_calls_history[self.REAL_ENVIDO] or envido_calls_history[self.REAL_ENVIDO]
+        ) and (
+            self.total_envido < 30 or ask_probability <= 33
+        ):
             #33% chances of asking envido once it has been called
-            envido_calls_history['envido'] +=1
+            envido_calls_history[self.ENVIDO] +=1
             return self.ENVIDO
-        if not(envido_calls_history['real_envido']) and (self.total_envido < 32 or ask_probability <= 66):
+        if not(envido_calls_history[self.REAL_ENVIDO]) and (self.total_envido < 32 or ask_probability <= 66):
             # 33% chances of asking real_envido (doesn't matter what's the actual bet)
-            envido_calls_history['real_envido'] += 1
+            envido_calls_history[self.REAL_ENVIDO] += 1
             return self.REAL_ENVIDO
         
-        if not(envido_calls_history['falta_envido']) and ask_probability <= 80: ## has envido >= 32
-            envido_calls_history['falta_envido'] +=1
+        if not(envido_calls_history[self.REAL_ENVIDO]) and ask_probability <= 80: ## has envido >= 32
+            envido_calls_history[self.FALTA_ENVDO] +=1
             return self.FALTA_ENVDO
         
         ##Handler to keep it safe
-        envido_calls_history['envido'] +=1
+        envido_calls_history[self.ENVIDO] +=1
         return self.ENVIDO
 
         
@@ -77,8 +75,7 @@ class Bot(PlayerBasics):
         '''Evaluate if there are conditions to ask envido or not and depending on what has been asked upload the bet.'''
         is_smart_to_ask: bool = self.total_envido >= self.SMART_ENVIDO and self.total_envido < self.NEED_ENVIDO
         is_grate_envido: bool = self.total_envido >= self.NEED_ENVIDO
-        self.is_bet_on_table = bool(bet_on_table)
-        print(self.is_bet_on_table)
+        self.is_bet_on_table = False if bet_on_table == self.PASS else bool(bet_on_table)
         
 
         if not (is_smart_to_ask or is_grate_envido):
