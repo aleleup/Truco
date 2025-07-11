@@ -46,6 +46,15 @@ def game_play(deck: Deck):
             if player.is_hand:
                 play_envido(player, bot)
             else: play_envido(bot, player)
+        
+        # while not hand_over():
+        while hand <= 3:
+            truco_calls_history: dict[str, int] = {
+                'truco': 0,
+                're_truco': 0,
+                'vale_cuatro': 0
+            }
+            player.play_card(truco_calls_history)
 
         print(f"PLAYER ENVIDO: {player.total_envido} || BOT ENVIDO {bot.total_envido}")
 

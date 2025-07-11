@@ -1,5 +1,5 @@
 from classes.player_basics import PlayerBasics
-
+from constants.types import *
 class Player(PlayerBasics):
     def __init__(self, cards, player_num, game_num, falta_envido_val):
         super().__init__(cards, player_num, game_num, falta_envido_val)
@@ -56,7 +56,44 @@ class Player(PlayerBasics):
             envidos_calls_history[actual_envido_options[user_response]] += 1
         return actual_envido_options[user_response]
     
+    def _add_truco_option(self, res:dict[int, Card|str], key:int, truco_calls_history: dict[str, int])-> None:
+        if not (truco_calls_history[self.TRUCO] or truco_calls_history[self.RE_TRUCO] or truco_calls_history[self.VALE_CUATRO]):
+            res[key] = self.TRUCO
+        if truco_calls_history[self.TRUCO] and not (truco_calls_history[self.RE_TRUCO] or truco_calls_history[self.VALE_CUATRO]):
+            res[key] = self.RE_TRUCO
+        if (truco_calls_history[self.TRUCO] and truco_calls_history[self.RE_TRUCO]) and not truco_calls_history[self.VALE_CUATRO]:
+            res[key] = self.VALE_CUATRO
 
+    def _show_cards_options(self, truco_calls_history: dict[str, int]) -> dict[int, Card]:
+        key: int = 0
+        res: dict[int, Card] = {}
+        for card in self.cards:
+            res[key] = card['name'] 
+            key+=1
+        self._add_truco_option(res, key, truco_calls_history)
 
-    # def play_card(self, game_num: int, envido_calls_history: dict[str, int], truco_calls_history: dict[str, int], bet_on_table:str):
-    #    if  self._in_envido_game(envido_calls_history):
+        return res   
+
+    def _pop_selected_card(self, cards_options:dict[int, Card| Bet], card_key: int) -> Card | Bet:
+        '''Returns a card or a bet'''
+        for card in self.cards:
+            if card['name'] == cards_options[card_key]:
+                poped_card: Card = self.cards.pop(card_key)
+                return poped_card['card_ascii_art']
+        #if it doen't match then it is a bet
+        return cards_options[card_key]
+
+    # def play_card(self, game_num: int, envido_calls_history: dict[str, int], truco_calls_history: dict[str, int], bet_on_table:Bet):
+    def play_card(self, truco_calls_history: dict[str, int]):
+
+        #    if  self._in_envido_game(envido_calls_history):
+        prev_cards_len: int = len(self.cards)
+
+        while prev_cards_len == len(self.cards):
+            cards_options: dict[int, Card] = self._show_cards_options(truco_calls_history)
+            user_response = int(
+                input(f"SELECT AN OPTION: {cards_options} ")
+            )
+            if user_response in cards_options:
+                card_or_bet_selected:  Card | Bet = self._pop_selected_card(cards_options, user_response)
+                print(card_or_bet_selected)
