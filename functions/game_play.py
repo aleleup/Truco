@@ -30,38 +30,26 @@ def game_play(deck: Deck):
     bot: Bot = Bot([], bot_id, game_num, 30)
     while not game_over(player, bot):
         game_num+=1
-        
+        is_in_envido: bool = False
         cards_of_the_hand: dict[str, Deck] = handle_cards_based_on_who_is_hand(player_id, bot_id, game_num, deck)
         player.cards = cards_of_the_hand['players_cards']
         bot.cards = cards_of_the_hand['bots_cards']
-       
-
-        player.calc_envido()
-        bot.calc_envido()
-
-        hand: int = 0
-
-        if len(player.cards) == len(bot.cards) and len(player.cards) == 3:
-            hand = 1
-            if player.is_hand:
-                play_envido(player, bot)
-            else: play_envido(bot, player)
-        
-        # while not hand_over():
-        while hand <= 3:
-            truco_calls_history: dict[str, int] = {
+        truco_calls_history: dict[str, int] = {
                 'truco': 0,
                 're_truco': 0,
                 'vale_cuatro': 0
             }
-            player.play_card(truco_calls_history)
+        envidos_calls: dict[str, int] = {
+                'envido': 0,
+                'real_envido': 0,
+                'falta_envido': 0
+            }
+        player.calc_envido()
+        bot.calc_envido()
 
-        print(f"PLAYER ENVIDO: {player.total_envido} || BOT ENVIDO {bot.total_envido}")
+        hand: int = 1
 
-        # if len(player.cards) == len(bot.cards) and len(player.cards) == 2:
-        #     hand = 2
-        # if len(player.cards) == len(bot.cards) and len(player.cards) == 1:
-        #     hand = 3
+        players_last_movement: Movement = {
+            'is_bet' : False, 'player_action': ''
+        }
 
-        print(f"PLAYER POINTS: {player.points} || BOT POINTS {bot.points}")
-        print("####################################")

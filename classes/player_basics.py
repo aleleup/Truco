@@ -1,3 +1,4 @@
+from constants.types import *
 class PlayerBasics:
     def __init__(self, cards: list[dict], player_num: int, game_num: int, falta_envido_val:int):
         self.points: int = 0
@@ -73,9 +74,11 @@ class PlayerBasics:
         self.total_envido = total_envido
 
 
-    def ask_envido(self, envidos_calls_history: dict[str, int], bet_on_table: str) -> str:
+    def ask_envido(self, envidos_calls_history: dict[str, int], bet_on_table: Bet) -> Bet:
         pass
-
+    
+    def ask_truco(self, truco_calls_history: dict[str, int], bet_on_table: Bet, hand: int) -> Bet:
+        pass
     
     def add_unwanted_envido_points(self, envido_calls_history: dict[str, int])-> None:
         print(f'envido_points to add: {envido_calls_history}')
@@ -96,12 +99,41 @@ class PlayerBasics:
         for bet in bet_calls_history:
             self.points += self.truco_points_values[bet]  * bet_calls_history[bet]
 
-    def _in_envido_game(envido_calls_history: dict[str, int]) -> bool:
-        for key in envido_calls_history:
-            if envido_calls_history[key]: return True
-        return False
+    def _calc_truco_option(self, last_truco_call: Bet)-> None:
+        if not last_truco_call:
+            return self.TRUCO
+        if last_truco_call == self.TRUCO:
+            return self.RE_TRUCO
+        if last_truco_call == self.RE_TRUCO:
+            return self.VALE_CUATRO
+
+    # def _show_cards_options(self, truco_calls_history: dict[str, int]) -> dict[int, Card]:
+    #     key: int = 0
+    #     res: dict[int, Card] = {}
+    #     for card in self.cards:
+    #         res[key] = card['name'] 
+    #         key+=1
+    #     self._add_truco_option(res, key, truco_calls_history)
+    #     return res   
     
-    def play_card(self, game_num: int, envido_calls_history: dict[str, int], truco_calls_history: dict[str, int], bet_on_table) -> None:
+    def _show_player_options(self, is_bet: bool, player_action: PlayerAction) -> Options | None:
+        '''returns options based on is_bet and if last player_action is not in envido_calls. 
+            return null if is in envido.'''
+        res: Options = {}
+        if is_bet and player_action not in self.envido_points_values: # -> then it's truco_call 
+            res[0] = self._calc_truco_option(player_action)
+            return res
+        else:
+            key: int = 0
+            for card in self.cards:
+                res[key] = card['name'] 
+                key+=1
+            res[key] = self._calc_truco_option(player_action)
+            return res   
+                
+
+    def play_card(self, other_player_movement: Movement, hand: int, envido_calls_history: dict[str, int], truco_calls_history: dict[str, int]) -> Movement:
         '''Player throw's cards on the table.
         TODO: integrate play_cards with envido on first hand.
         '''
+        

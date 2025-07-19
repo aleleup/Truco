@@ -86,4 +86,7 @@ class Bot(PlayerBasics):
         if is_grate_envido:
             return self.__handle_grate_envido(envidos_calls_history)
         
+    # def play_card(self, game_num, envido_calls_history, truco_calls_history, bet_on_table):
+    # def play_card(truco_calls_history, bet_on_table):
+
 
