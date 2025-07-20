@@ -18,7 +18,7 @@ def test_first_hand(deck):
     player.calc_envido()
     bot.calc_envido()
     truco_calls_history: dict[str, int] = {
-            'truco': 0,
+            'truco': 1,
             're_truco': 0,
             'vale_cuatro': 0
         }
@@ -29,12 +29,13 @@ def test_first_hand(deck):
         }
 
 
-    hand: int = 2
+    hand: int = 1
 
     players_last_movement: Movement = {
-        'is_bet' : True, 'player_action': 'vale_cuatro'
+        'is_bet' : False, 'player_action': ''
     }
 
     players_last_movement = player.play_card(players_last_movement, hand, envidos_calls_history, truco_calls_history)
 
-    print(players_last_movement)
+    print(players_last_movement['player_action'] if players_last_movement['is_bet'] else players_last_movement['player_action']['card_ascii_art'] )
+    print("TRUCO_HISTORY_MODIFICATION", truco_calls_history)

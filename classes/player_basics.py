@@ -99,12 +99,12 @@ class PlayerBasics:
         for bet in bet_calls_history:
             self.points += self.truco_points_values[bet]  * bet_calls_history[bet]
 
-    def _calc_truco_option(self, last_truco_call: Bet)-> None:
-        if not last_truco_call:
+    def _calc_truco_option(self, truco_calls_history: dict[str,int])-> None:
+        if not truco_calls_history[self.TRUCO]:
             return self.TRUCO
-        if last_truco_call == self.TRUCO:
+        if truco_calls_history[self.TRUCO]:
             return self.RE_TRUCO
-        if last_truco_call == self.RE_TRUCO:
+        if truco_calls_history[self.RE_TRUCO]:
             return self.VALE_CUATRO
 
     # def _show_cards_options(self, truco_calls_history: dict[str, int]) -> dict[int, Card]:
@@ -116,22 +116,25 @@ class PlayerBasics:
     #     self._add_truco_option(res, key, truco_calls_history)
     #     return res   
     
-    def _show_player_options(self, is_bet: bool, player_action: PlayerAction) -> Options | None:
+    def _show_player_options(self, truco_calls_history: dict[str,int], hand: int) -> Options | None:
         '''returns options based on is_bet and if last player_action is not in envido_calls. 
             return null if is in envido.'''
         res: Options = {}
-        if is_bet and player_action not in self.envido_points_values: # -> then it's truco_call 
-            res[0] = self._calc_truco_option(player_action)
-            return res
+        key: int = 0
+        for card in self.cards:
+            res[key] = card['name'] 
+            key+=1
+        if hand == 1: 
+            res[key] = self.ENVIDO
+            res[key+1] = self._calc_truco_option(truco_calls_history)
         else:
-            key: int = 0
-            for card in self.cards:
-                res[key] = card['name'] 
-                key+=1
-            res[key] = self._calc_truco_option(player_action)
-            return res   
+            res[key] = self._calc_truco_option(truco_calls_history)
+        return res   
                 
-
+    def _throw_selected_card(self, i: int) -> Card:
+        '''pop the i index card of cards'''
+        return self.cards.pop(i)
+        
     def play_card(self, other_player_movement: Movement, hand: int, envido_calls_history: dict[str, int], truco_calls_history: dict[str, int]) -> Movement:
         '''Player throw's cards on the table.
         TODO: integrate play_cards with envido on first hand.

@@ -100,7 +100,7 @@ class Player(PlayerBasics):
     #                 res = envido_decision
     def ask_truco(self, truco_calls_history: dict[str, int], bet_on_table: Bet, hand: int ) -> Bet:
         truco_options: Options = {}
-        truco_call_available: Options = self._calc_truco_option(bet_on_table)
+        truco_call_available: Options = self._calc_truco_option(truco_calls_history)
         if bet_on_table and hand == 1:
             truco_options = {
                 0: truco_call_available, 1: self.ENVIDO ,2:self.ACCEPT, 3: self.DONT_ACCEPT
@@ -143,3 +143,23 @@ class Player(PlayerBasics):
             if truco_bet_selection == self.ENVIDO:
                 truco_bet_selection = self.ask_envido(envido_calls_history, '') #None bet on table related on envido
             return {'is_bet': True, 'player_action': truco_bet_selection }
+        
+        ## Not in bet action:
+        player_options: Options = self._show_player_options(truco_calls_history, hand)
+        player_selection: int = int(
+            input(f"SELECT AN OPTION: {player_options} ")
+        )
+        user_response: PlayerAction = player_options[player_selection]
+
+        if user_response in envido_calls_history:
+            return {'is_bet': True, 'player_action': self.ask_envido(envido_calls_history, '')}
+        
+        if user_response in truco_calls_history:
+            truco_calls_history[user_response] += 1
+            return {'is_bet': True, 'player_action': user_response}
+        
+        #user_response is a card
+        return {
+            'is_bet': False,
+            'player_action': self._throw_selected_card(player_selection)
+        }
