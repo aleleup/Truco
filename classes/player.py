@@ -133,7 +133,7 @@ class Player(PlayerBasics):
         is_last_move_bet: bool = other_player_movement['is_bet']
         last_action: PlayerAction = other_player_movement['player_action']
 
-        playing_envido: bool = is_last_move_bet and last_action in self.envido_points_values 
+        playing_envido: bool = is_last_move_bet and last_action in envido_calls_history
 
         if playing_envido:
             return { 'is_bet': True, 'player_action':self.ask_envido(envido_calls_history, last_action)}
@@ -145,21 +145,26 @@ class Player(PlayerBasics):
             return {'is_bet': True, 'player_action': truco_bet_selection }
         
         ## Not in bet action:
-        player_options: Options = self._show_player_options(truco_calls_history, hand)
-        player_selection: int = int(
-            input(f"SELECT AN OPTION: {player_options} ")
-        )
-        user_response: PlayerAction = player_options[player_selection]
+        while True:
+            player_action: PlayerAction = ''
+            player_options: Options = self._show_player_options(truco_calls_history, hand)
+            player_selection: int = int(
+                input(f"SELECT AN OPTION: {player_options} ")
+            )
+            user_response: PlayerAction = player_options[player_selection]
 
-        if user_response in envido_calls_history:
-            return {'is_bet': True, 'player_action': self.ask_envido(envido_calls_history, '')}
-        
-        if user_response in truco_calls_history:
-            truco_calls_history[user_response] += 1
-            return {'is_bet': True, 'player_action': user_response}
-        
-        #user_response is a card
-        return {
-            'is_bet': False,
-            'player_action': self._throw_selected_card(player_selection)
-        }
+            if user_response in envido_calls_history:
+                player_action = self.ask_envido(envido_calls_history, '')
+                if player_action != self.PASS: return {'is_bet': True, 'player_action': player_action }
+             
+            elif user_response in truco_calls_history:
+                truco_calls_history[user_response] += 1
+
+                return {'is_bet': True, 'player_action': user_response}
+            
+            #user_response is a card
+            else:
+                return {
+                'is_bet': False,
+                'player_action': self._throw_selected_card(player_selection)
+            }
