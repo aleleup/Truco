@@ -2,7 +2,7 @@ from classes.bot import Bot
 from classes.player import Player
 from functions.deal_cards import handle_cards
 from  constants.types import *
-
+from math import factorial as f
 
 
 
@@ -43,3 +43,32 @@ def test_first_hand(deck):
         print(players_last_movement['player_action'] if players_last_movement['is_bet'] else players_last_movement['player_action']['card_ascii_art'] )
         
         hand += 1
+
+        
+def cards_in_hand_in_comb_list(cards_in_hand, comb_list):
+    counter = 0
+    for comb in comb_list:
+        for card in cards_in_hand:
+            if card in comb: 
+                counter += 1
+        if counter == 3: return True
+    
+    return False
+def test_avarage_to_stablish_thresholds(deck):
+    bot = Bot([], 0, 1, 30)
+    i: int = 0
+    cards_comb: list[Deck] = []
+    total_combinations_possible:int = 9880 #combinatory (40,  3)
+
+    while i < total_combinations_possible:
+        bot.cards = handle_cards(deck, [])
+        if not cards_in_hand_in_comb_list(bot.cards, cards_comb):
+            cards_comb.append(bot.cards)
+
+
+            print(f'''
+                ####### CARDS #######
+                {bot.cards[0]['name']} | {bot.cards[1]['name']} | {bot.cards[2]['name']}
+            ''')
+            i += 1
+   

@@ -99,21 +99,7 @@ class Player(PlayerBasics):
     #                 is_in_envido = True
     #                 res = envido_decision
     def ask_truco(self, truco_calls_history: dict[str, int], bet_on_table: Bet, hand: int ) -> Bet:
-        truco_options: Options = {}
-        truco_call_available: Options = self._calc_truco_option(truco_calls_history)
-        if bet_on_table and hand == 1:
-            truco_options = {
-                0: truco_call_available, 1: self.ENVIDO ,2:self.ACCEPT, 3: self.DONT_ACCEPT
-            }
-        elif bet_on_table:
-            truco_options = {
-                0: truco_call_available, 1:self.ACCEPT, 2: self.DONT_ACCEPT
-            }
-        else:
-            truco_options = {
-                0: truco_call_available, 1: self.PASS
-            }
-
+        truco_options: Options = self._calculate_truco_options(truco_calls_history, bet_on_table, hand)
         player_selection: int = int(
             input(f'SELECT AN OPTION: {truco_options}')
         )   

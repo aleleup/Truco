@@ -2,10 +2,10 @@ from constants.types import *
 class PlayerBasics:
     def __init__(self, cards: list[dict], player_num: int, game_num: int, falta_envido_val:int):
         self.points: int = 0
-        self.cards = cards
-        self.player_num = player_num
-        self.game_num = game_num
-        self.falta_envido_val = falta_envido_val
+        self.cards: Deck = cards
+        self.player_num: int = player_num
+        self.game_num: int = game_num
+        self.falta_envido_val: int = falta_envido_val
         self.total_envido: int = 0
         self.is_hand: bool =  True if game_num %2 == player_num else False    
         self.envido_points_values: dict[str, int] = {
@@ -47,6 +47,13 @@ class PlayerBasics:
                 index = i
                 comp = l[i][prop]
         l.pop(index)
+
+    def _cards_deep_copy(self) -> Deck:
+        cards_copy: Deck = []
+        for card in self.cards:
+            card_copy = card.copy()
+            cards_copy.append(card_copy)
+        return cards_copy
 
     def calc_envido(self) -> int:
         '''Each player calculates their own envidos'''
@@ -99,13 +106,29 @@ class PlayerBasics:
         for bet in bet_calls_history:
             self.points += self.truco_points_values[bet]  * bet_calls_history[bet]
 
-    def _calc_truco_option(self, truco_calls_history: dict[str,int])-> None:
+    def _truco_available_based_on_history(self, truco_calls_history: dict[str,int])-> Bet:
         if not truco_calls_history[self.TRUCO]:
             return self.TRUCO
         if truco_calls_history[self.TRUCO] and not truco_calls_history[self.RE_TRUCO]:
             return self.RE_TRUCO
         if truco_calls_history[self.RE_TRUCO] and not truco_calls_history[self.VALE_CUATRO]:
             return self.VALE_CUATRO 
+    
+    def _calculate_truco_options(self, truco_calls_history: dict[str, int], bet_on_table:Bet, hand: int) -> Options:
+        truco_call_available: Bet = self._truco_available_based_on_history(truco_calls_history)
+        if bet_on_table and hand == 1:
+            return {
+                0: truco_call_available, 1: self.ENVIDO ,2:self.ACCEPT, 3: self.DONT_ACCEPT
+            }
+        elif bet_on_table:
+            return {
+                0: truco_call_available, 1:self.ACCEPT, 2: self.DONT_ACCEPT
+            }
+        else:
+            return {
+                0: truco_call_available, 1: self.PASS
+            }
+
     
     def _show_player_options(self, truco_calls_history: dict[str,int], hand: int) -> Options | None:
         '''returns options based on is_bet and if last player_action is not in envido_calls. 
@@ -117,9 +140,9 @@ class PlayerBasics:
             key+=1
         if hand == 1: 
             res[key] = self.ENVIDO
-            res[key+1] = self._calc_truco_option(truco_calls_history)
+            res[key+1] = self._truco_available_based_on_history(truco_calls_history)
         else:
-            res[key] = self._calc_truco_option(truco_calls_history)
+            res[key] = self._truco_available_based_on_history(truco_calls_history)
         return res   
                 
     def _throw_selected_card(self, i: int) -> Card:
