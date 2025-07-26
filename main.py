@@ -16,7 +16,7 @@ def render_truco() -> None:
     deck = create_deck()
     # print(deck)
     # game_play(deck)
-    test_avarage_to_stablish_thresholds(deck)
+    test_bot_ask_truco(deck)
 render_truco()
 
 

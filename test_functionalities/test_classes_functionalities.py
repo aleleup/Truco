@@ -44,6 +44,30 @@ def test_first_hand(deck):
         
         hand += 1
 
+
+
+def test_bot_ask_truco(deck):
+    
+    
+
+    hand = 1
+    bot = Bot([], 0, 1, 30)
+    bot.cards = handle_cards(deck, [])
+    truco_calls_history: dict[str, int] = {
+            'truco': 1,
+            're_truco': 0,
+            'vale_cuatro': 0
+        }
+    envidos_calls_history: dict[str, int] = {
+            'envido': 0,
+            'real_envido': 0,
+            'falta_envido': 0
+        }
+    players_last_movement: Movement = {
+            'is_bet' : True, 'player_action': 'truco'
+        }
+    bot.print_cards()
+    bot.play_card(players_last_movement, hand, envidos_calls_history, truco_calls_history)
         
 def cards_in_hand_in_comb_list(cards_in_hand, comb_list):
     counter = 0

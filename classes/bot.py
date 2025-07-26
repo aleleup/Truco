@@ -7,12 +7,46 @@ class Bot(PlayerBasics):
         super().__init__(cards, player_num, game_num, falta_envido_val)
         self.SMART_ENVIDO: int = 22
         self.NEED_ENVIDO: int = 27
-        self.is_bet_on_table:bool = False
-        
-        self.is_excelent_truco: bool # avarage(truco_logic_values) > x (x:int) 
-        self.is_acceptable_truco: bool # y <= avarage(truco_logic_values) < x (x:int, y:int) 
-        self.is_bad_truco: bool # y > avarage(truco_logic_values)
+        self.playing_envido:bool = False
+        self.playing_truco:bool = False
 
+        self.EXCELENT_TRUCO: int = 11
+        self.GOOD_TRUCO: int = 9
+        self.ACCEPTABLE_TRUCO: int = 7
+        self.BAD_TRUCO: int = 5
+        self.HORRIBLE_TRUCO: int = 1
+
+        self.truco_status: str = ''
+
+    def _create_key_or_add_to_property(self, cards_status_counter: dict[str, int], property: str) -> None:
+        if property in cards_status_counter:
+            cards_status_counter[property] += 1
+        else:
+            cards_status_counter[property] = 1
+
+    def _define_hand_status(self) -> None:
+        '''Stablish if hand is good or bad'''
+        # cards_copy = self._cards_deep_copy(self.cards)
+        cards_status_counter: dict[str, int] = {}
+        for card_to_analize in self.cards:
+            if card_to_analize['value'] >= self.EXCELENT_TRUCO:
+                self._create_key_or_add_to_property(cards_status_counter, 'EXCELLENT')
+
+            if card_to_analize['value'] < self.EXCELENT_TRUCO and card_to_analize['value'] >= self.GOOD_TRUCO:
+                self._create_key_or_add_to_property(cards_status_counter, 'GOOD')
+
+            if card_to_analize['value'] < self.GOOD_TRUCO and card_to_analize['value'] >= self.ACCEPTABLE_TRUCO:
+                self._create_key_or_add_to_property(cards_status_counter, 'ACCEPTABLE')
+
+            if card_to_analize['value'] < self.ACCEPTABLE_TRUCO and card_to_analize['value'] >= self.BAD_TRUCO:
+                self._create_key_or_add_to_property(cards_status_counter, 'BAD')
+
+            if card_to_analize['value'] < self.BAD_TRUCO and card_to_analize['value'] >= self.HORRIBLE_TRUCO:
+                self._create_key_or_add_to_property(cards_status_counter, 'HORRIBLE')
+
+        return cards_status_counter
+
+                
 
     
     def __handle_not_smart_to_envido(self, envidos_calls_history: dict[str, int]) -> str:
@@ -20,9 +54,9 @@ class Bot(PlayerBasics):
         ask_probability: int = randint(1, 100)
         # print("ASKING PROBABILITY BAD ENVIDO", ask_probability)
         
-        if self.is_bet_on_table: return self.DONT_ACCEPT
+        if self.playing_envido: return self.DONT_ACCEPT
 
-        if ask_probability <= 75 and not self.is_bet_on_table: return self.PASS
+        if ask_probability <= 75 and not self.playing_envido: return self.PASS
 
         if ask_probability < 94 and not (
             envidos_calls_history[self.ENVIDO] < 2 or envidos_calls_history[self.REAL_ENVIDO] or envidos_calls_history[self.FALTA_ENVDO]
@@ -40,7 +74,7 @@ class Bot(PlayerBasics):
 
     def __handle_smart_envido(self,envido_calls_history: dict[str, int]) -> str:
         '''Keep it safe... for now'''
-        if self.is_bet_on_table:
+        if self.playing_envido:
             if self.total_envido >= 25: return self.ACCEPT
             return self.DONT_ACCEPT
         envido_calls_history[self.ENVIDO] +=1
@@ -51,9 +85,9 @@ class Bot(PlayerBasics):
         ask_probability: int = randint(1,100)
         # print("ASKING PROBABILITY GREAT ENVIDO", ask_probability)
 
-        if ask_probability > 80 and not (self.is_bet_on_table):
-            # print("GOES FISHING")
-            return None 
+        if ask_probability > 80 and not (self.playing_envido or self.playing_truco):
+           
+            return self.PASS 
         
         if envido_calls_history[self.ENVIDO] == 1 and not (
         envido_calls_history[self.REAL_ENVIDO] or envido_calls_history[self.REAL_ENVIDO]
@@ -80,7 +114,6 @@ class Bot(PlayerBasics):
         '''Evaluate if there are conditions to ask envido or not and depending on what has been asked upload the bet.'''
         is_smart_to_ask: bool = self.total_envido >= self.SMART_ENVIDO and self.total_envido < self.NEED_ENVIDO
         is_grate_envido: bool = self.total_envido >= self.NEED_ENVIDO
-        self.is_bet_on_table = False if bet_on_table == self.PASS else bool(bet_on_table)
         
 
         if not (is_smart_to_ask or is_grate_envido):
@@ -91,24 +124,39 @@ class Bot(PlayerBasics):
         if is_grate_envido:
             return self.__handle_grate_envido(envidos_calls_history)
     
-    def ask_truco(self, truco_calls_history: dict[str, int], bet_on_table: Bet, hand: int) -> Bet:
-        truco_available_options: Options = self._calculate_truco_options(truco_calls_history, bet_on_table, hand)
 
+    def _handle_truco_calls(cards_status: dict[str, int], truco_calls_history: dict[str, int]) -> Bet:
+        '''responses or starts a truco bet'''
+        #TODO implement this function
+    
+    def ask_truco(self, truco_calls_history: dict[str, int], envido_calls_history: dict[str, int] ,bet_on_table: Bet, hand: int) -> Bet:
+        truco_available_options: Options = self._calculate_truco_options(truco_calls_history, bet_on_table, hand)
+        cards_status: dict[str, int] = self._define_hand_status()
+        bot_action: Bet = ''
+        print(f"BOT TRUCO OPTION {truco_available_options} && CARDS STATUS {cards_status}")
+        if self.ENVIDO in truco_available_options:
+            bot_action = self.ask_envido(envido_calls_history, bet_on_table)
+        if bot_action != self.PASS: return bot_action
+
+        #"else"
+        return self._handle_truco_calls(cards_status, truco_calls_history)
+         
+        
+
+            
 
 
     def play_card(self, other_player_movement: Movement, hand: int, envido_calls_history: dict[str, int], truco_calls_history: dict[str, int]) -> Movement:
         is_last_move_bet: bool = other_player_movement['is_bet']
         last_action: PlayerAction = other_player_movement['player_action']
+        self.playing_envido = last_action in envido_calls_history and is_last_move_bet
+        self.playing_truco = last_action in truco_calls_history and is_last_move_bet
 
-        playing_envido: bool = is_last_move_bet and last_action in envido_calls_history
-
-        if playing_envido:
-            #TODO -> change logic so bot can go fishing
+        # bot_action: PlayerAction = ''
+        if self.playing_envido:
             return { 'is_bet': True, 'player_action':self.ask_envido(envido_calls_history, last_action)}
         
-        if is_last_move_bet and not playing_envido: # -> Then we are betting for truco. only options need to be *upper truco bet, accept or dont_accept
-            truco_bet_selection: Bet = self.ask_truco(truco_calls_history, last_action, hand)
-            if truco_bet_selection == self.ENVIDO:
-                truco_bet_selection = self.ask_envido(envido_calls_history, '') #None bet on table related on envido
+        elif self.playing_truco: 
+            truco_bet_selection: Bet = self.ask_truco(truco_calls_history, envido_calls_history, last_action, hand)
             return {'is_bet': True, 'player_action': truco_bet_selection }
         

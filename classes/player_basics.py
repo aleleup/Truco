@@ -37,6 +37,12 @@ class PlayerBasics:
         #     ''
         # }
 
+    def print_cards(self) -> None:
+        print(f'''
+                ####### CARDS #######
+                {self.cards[0]['name']} | {self.cards[1]['name']} | {self.cards[2]['name']}
+    ''')
+
     def _pop_lowest_val(self, l:list, prop:str) -> None:
         index: int = 0
         comp: int = 0
@@ -47,6 +53,15 @@ class PlayerBasics:
                 index = i
                 comp = l[i][prop]
         l.pop(index)
+
+    def _pop_highest_card(self, cards: Deck) -> None:
+        index: int = 0
+        comp: int = 0
+        for i in range(len(cards)):
+            if cards[i]['value'] > comp:
+                index = i
+                comp = cards[i]['value']
+        cards.pop(index)
 
     def _cards_deep_copy(self) -> Deck:
         cards_copy: Deck = []
