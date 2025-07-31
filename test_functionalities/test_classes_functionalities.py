@@ -65,7 +65,9 @@ def test_bot_ask_truco(deck):
             'is_bet': False, 'player_action': ''
         }
     bot.print_cards()
-    print("TESTING BOTS DECISIONS", bot.play_card(players_last_movement, hand, envidos_calls_history, truco_calls_history))
+    bot_responses: Movement = bot.play_card(players_last_movement, hand, envidos_calls_history, truco_calls_history)
+    
+    print("TESTING BOTS DECISIONS", bot_responses['player_action'] if bot_responses['is_bet'] else bot_responses['player_action']['card_ascii_art'] )
         
 def cards_in_hand_in_comb_list(cards_in_hand, comb_list):
     counter = 0

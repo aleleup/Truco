@@ -259,8 +259,43 @@ class Bot(PlayerBasics):
         return self._handle_truco_calls(cards_status, truco_calls_history, truco_available_options[0], hand)
          
      ######### END OF TRUCO FUNCTIONS #########   
-        
+    
 
+    def _play_selected_card(self, oponents_card: Card) -> Card:
+        '''Remove and return the most inteligent card from self.card '''
+        index: int = -1
+        if oponents_card:
+            smarter_value: int = 100
+            card_selected: bool = False
+            for card in self.cards:
+                if card['value'] >= oponents_card['value'] and card['value'] < smarter_value:
+                    card_selected = True
+                    index += 1
+                    smarter_value = card['value']
+
+            if card_selected:
+                return self._throw_selected_card(index)
+
+            for card in self.cards:
+                if card['value'] < smarter_value:
+                    smarter_value = card['value']
+                    index += 1
+            
+            return self._throw_selected_card(index)
+        
+        else:
+            smarter_value: int = 0
+            for card in self.cards:
+                if card['value'] > smarter_value:
+                    index+=1
+                    smarter_value = card['value']
+            
+            return self._throw_selected_card(index)
+
+                
+
+        
+        
     def play_card(self, other_player_movement: Movement, hand: int, envido_calls_history: dict[str, int], truco_calls_history: dict[str, int]) -> Movement:
         is_last_move_bet: bool = other_player_movement['is_bet']
         last_action: PlayerAction = other_player_movement['player_action']
@@ -282,3 +317,6 @@ class Bot(PlayerBasics):
             if bot_bet_response != self.PASS:
                 return self._return_player_movement(True, bot_bet_response)
             print("TIME TO PLAY CARD")
+            #last_action is a Card or Null. response is a card
+            bot_card:Card = self._play_selected_card(last_action)
+            return self._return_player_movement(False, bot_card)

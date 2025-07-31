@@ -26,6 +26,7 @@ class PlayerBasics:
         self.PASS: str = 'pass'
         self.ACCEPT: str = 'accept'
         self.DONT_ACCEPT: str = 'dont_accept'
+        # self.ABANDON
         self.truco_points_values : dict[str, int] = {
             'truco': 2,  ## Only truco available
             're_truco': 3,
