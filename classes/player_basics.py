@@ -96,6 +96,11 @@ class PlayerBasics:
         self.total_envido = total_envido
 
 
+    def _return_player_movement(self, is_bet: bool, action: PlayerAction) -> Movement: 
+        return {
+            'is_bet': is_bet, 'player_action': action
+        }
+
     def ask_envido(self, envidos_calls_history: dict[str, int], bet_on_table: Bet) -> Bet:
         pass
     
@@ -131,18 +136,22 @@ class PlayerBasics:
     
     def _calculate_truco_options(self, truco_calls_history: dict[str, int], bet_on_table:Bet, hand: int) -> Options:
         truco_call_available: Bet = self._truco_available_based_on_history(truco_calls_history)
-        if bet_on_table and hand == 1:
-            return {
-                0: truco_call_available, 1: self.ENVIDO ,2:self.ACCEPT, 3: self.DONT_ACCEPT
-            }
-        elif bet_on_table:
-            return {
-                0: truco_call_available, 1:self.ACCEPT, 2: self.DONT_ACCEPT
-            }
+        truco_options_list:list[str] = [truco_call_available]
+
+        if hand == 1: truco_options_list.append(self.ENVIDO)
+        
+        if bet_on_table:
+            truco_options_list += [self.ACCEPT, self.DONT_ACCEPT]
         else:
-            return {
-                0: truco_call_available, 1: self.PASS
-            }
+            truco_options_list.append(self.PASS)
+        i:int = 0
+        res: Options = {}
+        for option in truco_options_list:
+            res[i] = option
+            i+=1
+        
+        return res
+        
 
     
     def _show_player_options(self, truco_calls_history: dict[str,int], hand: int) -> Options | None:

@@ -1,6 +1,6 @@
-Card = dict[str, str or int]
+Card = dict[str, str | int]
 Deck = list[Card]
 Bet = str
-PlayerAction = Card or Bet
-Movement = dict[str, bool or PlayerAction]
-Options = dict[int, Card or Bet]
+PlayerAction = Card | Bet
+Movement = dict[str, bool | PlayerAction]
+Options = dict[int, Card | Bet]
