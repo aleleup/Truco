@@ -39,6 +39,7 @@ class PlayerBasics:
         # }
 
     def print_cards(self) -> None:
+        '''TODO: solve index error'''
         print(f'''
                 ####### CARDS #######
                 {self.cards[0]['name']} | {self.cards[1]['name']} | {self.cards[2]['name']}

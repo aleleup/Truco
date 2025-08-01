@@ -64,7 +64,7 @@ def test_bot_ask_truco(deck):
     players_last_movement: Movement = {
             'is_bet': False, 'player_action': ''
         }
-    bot.print_cards()
+    # bot.print_cards()
     bot_responses: Movement = bot.play_card(players_last_movement, hand, envidos_calls_history, truco_calls_history)
     
     print("TESTING BOTS DECISIONS", bot_responses['player_action'] if bot_responses['is_bet'] else bot_responses['player_action']['card_ascii_art'] )
@@ -96,3 +96,50 @@ def test_avarage_to_stablish_thresholds(deck):
             ''')
             i += 1
    
+
+def set_back_players_las_mov_on_accept_or_dont_accept(player_last_movement: Movement) -> None:
+    if player_last_movement['player_action'] in ['accept', 'dont_accept']:
+        player_last_movement['is_bet'] = False
+        player_last_movement['player_action'] = ''
+
+def test_first_interaction(deck):
+    player_id: int = 0
+    bot_id: int = 1 
+
+    player: Player = Player([], player_id, 1, 30)
+    bot: Bot = Bot([], bot_id, 1, 30)
+
+    cards_in_use = []
+    player.cards = handle_cards(deck, cards_in_use)
+    bot.cards = handle_cards(deck, cards_in_use)
+    player.calc_envido()
+    bot.calc_envido()
+    truco_calls_history: dict[str, int] = {
+            'truco': 0,
+            're_truco': 0,
+            'vale_cuatro': 0
+        }
+    envidos_calls_history: dict[str, int] = {
+            'envido': 0,
+            'real_envido': 0,
+            'falta_envido': 0
+        }
+
+    hand: int = 1
+    players_last_movement: Movement = {
+            'is_bet' : False, 'player_action': ''
+        }
+    while len(player.cards):
+        
+        # print("PLAYER CARD", player.print_cards())
+        players_last_movement = player.play_card(players_last_movement, hand, envidos_calls_history, truco_calls_history)   
+        print("player: ", players_last_movement['player_action'] if players_last_movement['is_bet'] else players_last_movement['player_action']['card_ascii_art'] )
+
+        set_back_players_las_mov_on_accept_or_dont_accept(players_last_movement)
+
+        players_last_movement = bot.play_card(players_last_movement, hand, envidos_calls_history, truco_calls_history)
+        print("bot: ", players_last_movement['player_action'] if players_last_movement['is_bet'] else players_last_movement['player_action']['card_ascii_art'] )
+
+        set_back_players_las_mov_on_accept_or_dont_accept(players_last_movement)
+        if not players_last_movement['is_bet']:
+            hand += 1

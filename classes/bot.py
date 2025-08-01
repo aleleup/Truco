@@ -299,8 +299,14 @@ class Bot(PlayerBasics):
     def play_card(self, other_player_movement: Movement, hand: int, envido_calls_history: dict[str, int], truco_calls_history: dict[str, int]) -> Movement:
         is_last_move_bet: bool = other_player_movement['is_bet']
         last_action: PlayerAction = other_player_movement['player_action']
-        self.playing_envido = last_action in envido_calls_history and is_last_move_bet
-        self.playing_truco = last_action in truco_calls_history and is_last_move_bet
+        self.playing_envido = is_last_move_bet and last_action in envido_calls_history 
+        self.playing_truco = is_last_move_bet and  last_action in truco_calls_history 
+        if is_last_move_bet:
+            self.playing_envido = last_action in envido_calls_history 
+            self.playing_truco =  last_action in truco_calls_history 
+        else:
+            self.playing_envido, self.playing_truco = [False, False]
+            
         # bot_bet_response: Bet = ''
         # bot_action: PlayerAction = ''
         if self.playing_envido:

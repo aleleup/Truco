@@ -4,8 +4,6 @@ class Player(PlayerBasics):
     def __init__(self, cards, player_num, game_num, falta_envido_val):
         super().__init__(cards, player_num, game_num, falta_envido_val)
 
-    
-   
     def __evaluate_envido_options_based_on_calls(self, envidos_calls_history: dict[str, int], bet_on_table: str) -> dict[int, str]:
         '''deletes envido item from res if it completed it`s total calls'''
 
@@ -66,38 +64,7 @@ class Player(PlayerBasics):
                 return poped_card['card_ascii_art']
         #if it doen't match then it is a bet
         return cards_options[card_key]
-
-    # def play_card(self, game_num: int, envido_calls_history: dict[str, int], truco_calls_history: dict[str, int], bet_on_table:Bet):
-    # def play_card(self, truco_calls_history: dict[str, int]):
-
-    #     #    if  self._in_envido_game(envido_calls_history):
-    #     prev_cards_len: int = len(self.cards)
-
-    #     while prev_cards_len == len(self.cards):
-    #         cards_options: dict[int, Card] = self._show_cards_options(truco_calls_history)
-    #         user_response = int(
-    #             input(f"SELECT AN OPTION: {cards_options} ")
-    #         )
-    #         if user_response in cards_options:
-    #             card_or_bet_selected:  Card | Bet = self._pop_selected_card(cards_options, user_response)
-    #             print(card_or_bet_selected)
-
-    # def render_player_options(self, is_in_envido: bool, hand: int, truco_calls_history: dict[str, int], envidos_calls_history: dict[str, int], envido_bet:str) -> dict[int, str]:
-        
-    #     res: str | any = ''
-    #     options:  dict[int, str] =  self._show_cards_options(truco_calls_history)
-    #     if hand == 1:
-    #         options[4] = 'envido_options'
-    #     while not res:
-    #         user_decision: int = int(input(
-    #             f'Select an option: {options}'
-    #         ))
-
-    #         if user_decision == 4:
-    #             envido_decision: str = self.ask_envido(envidos_calls_history, envido_bet)
-    #             if envido_decision != self.PASS:
-    #                 is_in_envido = True
-    #                 res = envido_decision
+    
     def ask_truco(self, truco_calls_history: dict[str, int], bet_on_table: Bet, hand: int ) -> Bet:
         truco_options: Options = self._calculate_truco_options(truco_calls_history, bet_on_table, hand)
         player_selection: int = int(
@@ -122,13 +89,13 @@ class Player(PlayerBasics):
         playing_envido: bool = is_last_move_bet and last_action in envido_calls_history
 
         if playing_envido:
-            return { 'is_bet': True, 'player_action':self.ask_envido(envido_calls_history, last_action)}
+            return self._return_player_movement(True, self.ask_envido(envido_calls_history, last_action)) 
         
         if is_last_move_bet and not playing_envido: # -> Then we are betting for truco. only options need to be *upper truco bet, accept or dont_accept
             truco_bet_selection: Bet = self.ask_truco(truco_calls_history, last_action, hand)
             if truco_bet_selection == self.ENVIDO:
                 truco_bet_selection = self.ask_envido(envido_calls_history, '') #None bet on table related on envido
-            return {'is_bet': True, 'player_action': truco_bet_selection }
+            return self._return_player_movement(True,truco_bet_selection)
         
         ## Not in bet action:
         while True:
@@ -141,16 +108,14 @@ class Player(PlayerBasics):
 
             if user_response in envido_calls_history:
                 player_action = self.ask_envido(envido_calls_history, '')
-                if player_action != self.PASS: return {'is_bet': True, 'player_action': player_action }
+                if player_action != self.PASS: return self._return_player_movement(True, player_action)
              
             elif user_response in truco_calls_history:
                 truco_calls_history[user_response] += 1
 
-                return {'is_bet': True, 'player_action': user_response}
+                return self._return_player_movement(True, user_response)
             
             #user_response is a card
             else:
-                return {
-                'is_bet': False,
-                'player_action': self._throw_selected_card(player_selection)
-            }
+                return self._return_player_movement(False, self._throw_selected_card(player_selection))
+             
