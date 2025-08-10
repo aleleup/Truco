@@ -65,9 +65,10 @@ def test_bot_ask_truco(deck):
             'is_bet': False, 'player_action': ''
         }
     # bot.print_cards()
-    bot_responses: Movement = bot.play_card(players_last_movement, hand, envidos_calls_history, truco_calls_history)
+    while bot.cards:
+        bot_responses: Movement = bot.play_card(players_last_movement, hand, envidos_calls_history, truco_calls_history)
     
-    print("TESTING BOTS DECISIONS", bot_responses['player_action'] if bot_responses['is_bet'] else bot_responses['player_action']['card_ascii_art'] )
+        print("TESTING BOTS DECISIONS", bot_responses['player_action'] if bot_responses['is_bet'] else bot_responses['player_action']['card_ascii_art'] )
         
 def cards_in_hand_in_comb_list(cards_in_hand, comb_list):
     counter = 0
@@ -129,8 +130,11 @@ def test_first_interaction(deck):
     players_last_movement: Movement = {
             'is_bet' : False, 'player_action': ''
         }
+    
+    bot.print_cards()
     while len(player.cards):
-        
+        print("ACTUAL HAND: ", hand)
+
         # print("PLAYER CARD", player.print_cards())
         players_last_movement = player.play_card(players_last_movement, hand, envidos_calls_history, truco_calls_history)   
         print("player: ", players_last_movement['player_action'] if players_last_movement['is_bet'] else players_last_movement['player_action']['card_ascii_art'] )

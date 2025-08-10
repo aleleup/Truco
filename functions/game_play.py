@@ -11,6 +11,11 @@ def game_over(player:Player, bot:Bot) -> bool:
         return True
     return False
 
+def set_back_players_las_mov_on_accept_or_dont_accept(player_last_movement: Movement, truco_calls_history: dict[str, int], envido_calls_history: dict[str, int]) -> None:
+    if not player_last_movement['is_bet']: return
+
+    last_bet: Bet = player_last_movement['player_action']
+        
 def game_play(deck: Deck):
     '''Contain all gameplay logic'''
 
@@ -30,8 +35,7 @@ def game_play(deck: Deck):
     bot: Bot = Bot([], bot_id, game_num, 30)
     while not game_over(player, bot):
         game_num+=1
-        is_in_envido: bool = False
-        cards_of_the_hand: dict[str, Deck] = handle_cards_based_on_who_is_hand(player_id, bot_id, game_num, deck)
+        cards_of_the_hand: dict[str, Deck] = handle_cards_based_on_who_is_hand(player_id, game_num, deck)
         player.cards = cards_of_the_hand['players_cards']
         bot.cards = cards_of_the_hand['bots_cards']
         truco_calls_history: dict[str, int] = {
@@ -39,7 +43,7 @@ def game_play(deck: Deck):
                 're_truco': 0,
                 'vale_cuatro': 0
             }
-        envidos_calls: dict[str, int] = {
+        envidos_calls_history: dict[str, int] = {
                 'envido': 0,
                 'real_envido': 0,
                 'falta_envido': 0
@@ -52,4 +56,17 @@ def game_play(deck: Deck):
         players_last_movement: Movement = {
             'is_bet' : False, 'player_action': ''
         }
+
+        while player.cards and bot.cards:
+            players_last_movement = player.play_card(players_last_movement, hand, envidos_calls_history, truco_calls_history)   
+            print("player: ", players_last_movement['player_action'] if players_last_movement['is_bet'] else players_last_movement['player_action']['card_ascii_art'] )
+
+            set_back_players_las_mov_on_accept_or_dont_accept(players_last_movement)
+
+            players_last_movement = bot.play_card(players_last_movement, hand, envidos_calls_history, truco_calls_history)
+            print("bot: ", players_last_movement['player_action'] if players_last_movement['is_bet'] else players_last_movement['player_action']['card_ascii_art'] )
+
+            set_back_players_las_mov_on_accept_or_dont_accept(players_last_movement)
+            if not players_last_movement['is_bet']:
+                hand += 1
 

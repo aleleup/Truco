@@ -1,5 +1,6 @@
 from random import randint
 from constants.types import *
+from classes.player_basics import PlayerBasics
 def handle_cards(deck: Deck, cards_in_use: Deck) -> Deck:
     '''Searches in deck randomly a card and when 3 were selected = returns the hand'''
     i: int = 1
@@ -16,15 +17,15 @@ def handle_cards(deck: Deck, cards_in_use: Deck) -> Deck:
     return res
 
 
-def handle_cards_based_on_who_is_hand(players_id: int, bots_id: int, game_num:int, deck: Deck) -> dict[str, Deck]:
+def handle_cards_based_on_who_is_hand(player:PlayerBasics, bot: PlayerBasics, deck: Deck) -> dict[str, Deck]:
     '''Depending on who's receiving the cards first, you might have more chances on having a better play'''
     players_cards: Deck = []
     bots_cards: Deck = []
     cards_in_use: Deck = []
-    if game_num % 2 == players_id:
+    if player.is_hand:
         players_cards = handle_cards(deck, cards_in_use)
         bots_cards = handle_cards(deck, cards_in_use)
-    else:
+    elif bot.is_hand:
         bots_cards = handle_cards(deck, cards_in_use)
         players_cards = handle_cards(deck, cards_in_use)
     

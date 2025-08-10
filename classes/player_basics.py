@@ -7,7 +7,7 @@ class PlayerBasics:
         self.game_num: int = game_num
         self.falta_envido_val: int = falta_envido_val
         self.total_envido: int = 0
-        self.is_hand: bool =  True if game_num %2 == player_num else False    
+        self.is_hand: bool = game_num %2 == player_num 
         self.envido_points_values: dict[str, int] = {
             'envido': 2,
             'real_envido': 3,
@@ -33,18 +33,14 @@ class PlayerBasics:
             'vale_cuatro': 4
         }
 
-        # self.player_options: dict[int, str | int | dict[int | str]] = {
-        #     0: cards,
-        #     ''
-        # }
 
     def print_cards(self) -> None:
-        '''TODO: solve index error'''
-        print(f'''
-                ####### CARDS #######
-                {self.cards[0]['name']} | {self.cards[1]['name']} | {self.cards[2]['name']}
-    ''')
-
+        i:int = 0
+        for card in self.cards:
+            print(f'''
+                Card {i}: {card['card_ascii_art']}
+            ''')
+            i+=1
     def _pop_lowest_val(self, l:list, prop:str) -> None:
         index: int = 0
         comp: int = 0
