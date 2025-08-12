@@ -15,9 +15,8 @@ def render_truco() -> None:
 
     deck = create_deck()
     # print(deck)
-    # game_play(deck)
+    game_play(deck)
     # test_bot_ask_truco(deck)
-    test_first_interaction(deck)
 render_truco()
 
 
