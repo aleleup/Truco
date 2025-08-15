@@ -1,17 +1,16 @@
 from constants.types import *
 class PlayerBasics:
-    def __init__(self, cards: list[dict], player_num: int, game_num: int, falta_envido_val:int):
+    def __init__(self, player_id: int):
         self.points: int = 0
-        self.cards: Deck = cards
-        self.player_num: int = player_num
-        self.game_num: int = game_num
-        self.falta_envido_val: int = falta_envido_val
+        self.cards: Deck = []
+        self.player_id: int = player_id
+        self.falta_envido_val: int = 30
         self.total_envido: int = 0
-        self.is_hand: bool = game_num %2 == player_num 
+        self.is_hand: bool = False 
         self.envido_points_values: dict[str, int] = {
             'envido': 2,
             'real_envido': 3,
-            'falta_envido': falta_envido_val
+            'falta_envido': 30
         }
         #Envido key values (next to be used in GUIS)
         self.ENVIDO: str = 'envido'
@@ -32,6 +31,7 @@ class PlayerBasics:
             're_truco': 3,
             'vale_cuatro': 4
         }
+
 
 
     def print_cards(self) -> None:
@@ -60,6 +60,10 @@ class PlayerBasics:
                 index = i
                 comp = cards[i]['value']
         cards.pop(index)
+
+    def is_player_the_hand(self, game_num) -> None:
+        '''Stores in self.is hand if player is hand'''
+        self.is_hand = game_num %2 == self.player_id
 
     def _cards_deep_copy(self) -> Deck:
         cards_copy: Deck = []

@@ -1,4 +1,4 @@
-from constants.constants import card_ascii_art
+from constants.cards import card_ascii_art
 from constants.emojis import * 
 from constants.types import *
 

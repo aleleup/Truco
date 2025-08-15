@@ -1,8 +1,8 @@
 from classes.player_basics import PlayerBasics
 from constants.types import *
 class Player(PlayerBasics):
-    def __init__(self, cards, player_num, game_num, falta_envido_val):
-        super().__init__(cards, player_num, game_num, falta_envido_val)
+    def __init__(self, player_id):
+        super().__init__(player_id)
 
     def __evaluate_envido_options_based_on_calls(self, envidos_calls_history: dict[str, int], bet_on_table: str) -> dict[int, str]:
         '''deletes envido item from res if it completed it`s total calls'''

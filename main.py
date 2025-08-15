@@ -6,7 +6,7 @@ from learning_db import pg_and_fastapi
 from fastapi.middleware.cors import CORSMiddleware
 # Crear una instancia de la aplicación FastAPI
 app = FastAPI()
-
+#TODO: Learn how to create types based only in the variable value. f.e: status type must only in [on_going, finished]; bet type must be [envido, truco, accept, ...]
 origins = [
     "http://localhost", 
     "http://localhost:3000",
