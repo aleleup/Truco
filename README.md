@@ -1,2 +1,3 @@
 # Truco
-Truco hecho en python para mejorar mi nivel de programación
+Truco made to get better in programming and practice english.
+AI Only helps with the syntaxis and methods of sqlalchemy and fastApi.
