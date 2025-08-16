@@ -63,7 +63,7 @@ class PlayerBasics:
 
     def is_player_the_hand(self, game_num) -> None:
         '''Stores in self.is hand if player is hand'''
-        self.is_hand = game_num %2 == self.player_id
+        return game_num %2 == self.player_id
 
     def _cards_deep_copy(self) -> Deck:
         cards_copy: Deck = []

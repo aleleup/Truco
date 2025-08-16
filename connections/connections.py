@@ -3,9 +3,8 @@ from database import SessionLocal
 from databases.tables_schemas import PlaygroundTable, GameTableTable
 from constants.status import *
 from fastapi import APIRouter
-import json
-router = APIRouter()
 
+router = APIRouter()
 db = SessionLocal()
 def check_starting_game() -> bool:
     play_ground_table_items: int = db.query(PlaygroundTable).count()

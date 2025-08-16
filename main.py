@@ -1,7 +1,5 @@
-from functions.card_creation import create_deck
-from functions.game_play import game_play
-from test_functionalities.test_classes_functionalities import *
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket
+
 # from learning_db import pg_and_fastapi
 from connections import connections
 from fastapi.middleware.cors import CORSMiddleware
@@ -27,8 +25,9 @@ app.add_middleware(
     allow_methods=["*"],  # Permite todos los métodos (GET, POST, etc.)
     allow_headers=["*"],  # Permite todos los headers
 )
-# app.include_router(pg_and_fastapi.router)
 app.include_router(connections.router)
+
+
 @app.get("/")
 def read_root() -> dict[str, str]:
     """
@@ -37,3 +36,25 @@ def read_root() -> dict[str, str]:
     """
     return {"Hello": "World"}
 
+
+
+
+
+@app.websocket("/ws")
+
+async def websocket_endpoint(websocket: WebSocket):
+    # Aceptar la conexión
+    await websocket.accept()
+
+    try:
+        while True:
+            data = await websocket.receive_text()
+
+            print(f"Message recieved: {data}")
+            response = {
+                "backEndSays": "Hi there, front"
+            }
+            await websocket.send_text(f"Mensaje procesado: {response}")
+
+    except Exception as e:
+        print(f"Conexión cerrada con error: {e}")
