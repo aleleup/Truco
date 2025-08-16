@@ -36,22 +36,4 @@ async def test_api_example(body: TestApiBody):
     }
 
 
-@router.post("/delete-playground")
-async def delete_playground(body: TestApiBody):
-    print("PAYLOAD INCOMMING", body)
-    item_to_delete: MyExample = db.query(MyExample).filter(MyExample.player_id == body.pageId).first()
-    if not item_to_delete:
-        return {
-            "statusCode": 500,
-            "message": "None user found",
-            "error": True
-        },
 
-    db.delete(item_to_delete)
-    db.commit()
-    return {
-        "statusCode": 200,
-        "message": "User deleted succesfully",
-        "error": False
-    }
-    

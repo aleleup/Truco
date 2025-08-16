@@ -23,7 +23,6 @@ class GameTableTable(Base):
     player_1_points = Column(Integer)
 
 
-
 class CardRoundsTable(Base):
 
     __tablename__ = 'card_rounds'
