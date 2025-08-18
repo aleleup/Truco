@@ -1,7 +1,8 @@
 from fastapi import FastAPI, WebSocket
 
 # from learning_db import pg_and_fastapi
-from connections import connections
+from connections.connections import router
+from connections.websocket import router as websocket
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from database import SessionLocal
@@ -20,13 +21,17 @@ origins = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    #frontend origin
+    allow_origins=["http://localhost:3000"], 
     allow_credentials=True,
-    allow_methods=["*"],  # Permite todos los métodos (GET, POST, etc.)
-    allow_headers=["*"],  # Permite todos los headers
+    # Allows all methods including ws
+    allow_methods=["*"], 
+    # Allows all headers config including handshake for WebSockets
+    allow_headers=["*"], 
 )
-app.include_router(connections.router)
 
+app.include_router(router)
+app.include_router(websocket)
 
 @app.get("/")
 def read_root() -> dict[str, str]:

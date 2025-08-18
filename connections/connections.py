@@ -2,8 +2,9 @@ from pydantic import BaseModel
 from database import SessionLocal
 from databases.tables_schemas import PlaygroundTable, GameTableTable
 from constants.status import *
-from fastapi import APIRouter
-
+from fastapi import APIRouter, WebSocket
+from classes.game_table import GameTableClass
+import json
 router = APIRouter()
 db = SessionLocal()
 def check_starting_game() -> bool:
@@ -68,3 +69,4 @@ async def delete_playground(body: PageAvailabilityBody):
         "error": False
     }
     
+
