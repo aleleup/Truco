@@ -39,6 +39,7 @@ def calc_card_num(i: int) -> int:
         return 2
     if i == 10:
         return 3
+    return 0
 
 def calc_envido_value(card_num: int) -> int:
     if card_num in [12, 11, 10]:
@@ -76,26 +77,26 @@ def create_deck() -> Deck:
         envido_value: int = calc_envido_value(card_num)
         # case all cards num have same i value: 
         if i != 4 and i != 8 and i  < 11:
-            type_list: list = ['sword', 'wood', 'gold', 'cup']
+            type_list: list[str] = ['sword', 'wood', 'gold', 'cup']
             add_to_deck(type_list, card_num, i, envido_value, deck)
         # case weak 7s
         if i == 4:
-            type_list: list = [ 'wood', 'cup']
+            type_list: list[str] = [ 'wood', 'cup']
             add_to_deck(type_list, card_num, i, envido_value, deck)
         if i == 8:
-            type_list: list = [ 'gold', 'cup']
+            type_list: list[str] = [ 'gold', 'cup']
             add_to_deck(type_list, card_num, i, envido_value, deck)
         if i == 11:
-            type_list: list = [ 'gold']
+            type_list: list[str] = [ 'gold']
             add_to_deck(type_list, card_num, i, envido_value, deck)
         if i == 12:
-            type_list: list = ['sword']
+            type_list: list[str] = ['sword']
             add_to_deck(type_list, card_num, i, envido_value, deck)
         if i == 13:
-            type_list: list = ['wood']
+            type_list: list[str] = ['wood']
             add_to_deck(type_list, card_num, i, envido_value, deck)
         if i == 14:
-            type_list: list = ['sword']
+            type_list: list[str] = ['sword']
             add_to_deck(type_list, card_num, i, envido_value, deck)
         
     
