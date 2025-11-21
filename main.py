@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from connections import users_example
+from classes.GameDesk import GameDesk
 app = FastAPI()
 app.include_router(users_example.router)
 Response = dict[str, str]
@@ -11,7 +12,11 @@ def read_root() -> Response:
 def new_endpoint() -> Response:
     return {"message": "NEW ENDPOINT"}
 
+desk = GameDesk()
 
+@app.get("/cards")
+def show_cards():
+    return {"cards", f"{desk.deal_cards()}"}
 
 if __name__ == "__main__":
     print("STARTING TRUCO")
