@@ -16,7 +16,7 @@ desk = GameDesk()
 
 @app.get("/cards")
 def show_cards():
-    return {"cards", f"{desk.deal_cards()}"}
+    return desk.play_with_players_status()
 
 if __name__ == "__main__":
     print("STARTING TRUCO")
