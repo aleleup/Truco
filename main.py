@@ -16,8 +16,10 @@ desk = GameDesk()
 
 @app.get("/cards")
 def show_cards():
-    return desk.play_with_players_status()
+    return desk.init_row()
 
-if __name__ == "__main__":
-    print("STARTING TRUCO")
+@app.get("/player/{id}")
+def player_by_id(id: int):
+    return desk.show_player_data_by_id(id)
+
     
