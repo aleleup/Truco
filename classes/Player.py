@@ -2,7 +2,7 @@ from classes.Card import Card
 from constants.types import *
 class Player():
     def __init__(self, id: int) -> None:
-        self._cards: list[Card]
+        self._cards: list[Card] = []
         self._points: int = 0
         self.total_envido: int = 0
         self.id: int = id
@@ -72,3 +72,5 @@ class Player():
         self.total_envido = total_envido
 #--------------------------------------------------
   
+    def remove_card(self, i:int) -> Card:
+        return self._cards.pop(i)
