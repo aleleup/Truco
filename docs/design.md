@@ -109,16 +109,60 @@ DESK
 
 ```python
 class Desk :
-    player_0: Player;
-    player_1: Player;
-    deck: seq[Card];
-    is_game_over: bool;
-    hand: int;
-    betting_points: int;
-
+    _deck = TrucoDeck()
+    _deck.create_deck()
+    _player_0 = Player(0)
+    _player_1 = Player(1)
+    _bet_values: dict[str, dict[str, int]] = {
+        'envido': {
+            'envido': 2,
+            'real_envido':3,
+            # 'falta_envido': 0 Updates dinamically
+        },
+        'truco':{
+            'truco': 2,
+            're_truco': 3,
+            'vale_cuatro': 4
+        }
+    }
+    _ACCEPT = 'accept'
+    _DONT_ACCEPT = 'dont_accept'
+    _round: int = -1
+    hand: int = 0
+    _hand_player: Player
+    _foot_player: Player
+    _cards_on_the_desk :  dict[int, Card] = {}
+    _in_bet: bool
 
     def innit_game() -> None
 
     def start_new_row():
 
 ```
+- Diferenciate when a player has thrown a card or he has started a bet. On endpoint `/player-action` it recieves this structred body: ```json
+                    {
+                        "id": int,
+                        "action": {
+                            "card_index": int // -1 (or wont appear) if in bet, else 0 int in between 0 to length of cards list
+                            "bet": list[string] // void (or wont appear) if card_index is valid, else bet[0] indicates the type of bet and bet[1] indicates witch bet of the list was wanted.
+                        }
+                    }
+                ``` 
+            
+`in_bet -> True` 
+
+
+- ## Player
+    1) Contain players options and card
+    - Default options must be same for both players on every row... but on each action (only if an option was selected)
+    then it they must be updated for both of them depending on the games logic
+    - Default options: ```{'envdo': ['envido', 'real_envido','falta_envido'], 'truco': 'truco'}
+        ``` 
+    - Now, to update the options, the player wold need to know by the middleware what the other player has betted. Perhaps this is a `Desk` responsability.
+
+    ```python
+        _cards: list[Card] = []
+        _points: int = 0
+        total_envido: int = 0
+        id: int = id
+    ```

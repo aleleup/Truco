@@ -4,9 +4,10 @@ class Player():
     def __init__(self, id: int) -> None:
         self._cards: list[Card] = []
         self._points: int = 0
-        self.total_envido: int = 0
-        self.id: int = id
-    def show_card(self) -> list[dict[str, str | int]]: 
+        self._total_envido: int = 0
+        self._id: int = id
+        self._options: PlayerOptions = {}
+    def show_cards(self) -> list[dict[str, str | int]]: 
         res: list[dict[str, str | int]] = []
         for card in self._cards:
             card_data: dict[str, str | int] = {
@@ -29,10 +30,11 @@ class Player():
 
     def show_player_data(self) -> PlayerStatus:
         return {
-            "player_id": self.id,
+            "player_id": self._id,
             "points": self._points,
-            "cards": self.show_card(),
-            "envido": self.total_envido
+            "cards": self.show_cards(),
+            "options": self._options,
+            "envido": self._total_envido
         }
     
     # --------ENVIDO METHODS----------
@@ -69,8 +71,12 @@ class Player():
             for card in same_type_list:
                 total_envido += card.envido_value
             total_envido+= 20 
-        self.total_envido = total_envido
+        self._total_envido = total_envido
 #--------------------------------------------------
   
     def remove_card(self, i:int) -> Card:
+        print(self._cards)
         return self._cards.pop(i)
+    
+    def set_options(self, options: PlayerOptions) -> None:
+        self._options = options

@@ -1,12 +1,13 @@
 from fastapi import FastAPI
 from connections import users_example
 from classes.GameDesk import GameDesk
-
+from classes.PlayersActions import PlayersActions
+from constants.types import *
 from pydantic import BaseModel
 
 class Item(BaseModel):
     id: int
-    index: int
+    action: dict[str, int | list[str]]
 
 app = FastAPI()
 app.include_router(users_example.router)
@@ -29,10 +30,11 @@ def show_cards():
 def show_players_status():
     return desk.players_status()
 
-@app.post("/throw-card")
+@app.post("/players_action")
 def player_throws_card(body: Item):
-    # return
-    return desk.add_to_compare_list(int(body.id), int(body.index))
+   if type(body.action["card_index"]) == int and type(body.action["bet"]) == list:
+        new_action = PlayersActions(body.action["card_index"], body.action["bet"])
+        return desk.receive_players_action(body.id, new_action)
     
 
 @app.get("/player/{id}")
