@@ -1,48 +1,47 @@
 from constants.types import *
+from constants.bets import *
 from classes.TrucoDeck import *
 from classes.Player import Player
 from classes.PlayersActions import PlayersActions
+from classes.BetCallsHistory import BetCallsHistory
 class GameDesk:
     # player_0: Player
     # player_1: Player
     # deck: TrucoDeck
 
     def __init__(self) -> None:
+        # Deck
+        
         self._deck = TrucoDeck()
         self._deck.create_deck()
+        self._cards_on_the_desk :  dict[int, Card] = {} # should optimize list with arrays if they could store objects
+
+        # Players:
         self._player_0 = Player(0)
         self._player_1 = Player(1)
-        self._bet_values: dict[str, dict[str, int]] = {
-            'envido': {
-                'envido': 2,
-                'real_envido':3,
-                # 'falta_envido': 0 Updates dinamically
-            },
-            'truco':{
-                'truco': 2,
-                're_truco': 3,
-                'vale_cuatro': 4
-            }
-        }
-        self._bet_calls: dict[str, dict[str, int]] = {
-            'envido': {
-                'envido': 0, # Max 2
-                'real_envido': 0, #
-                'falta_envido': 0 # Max 1
-            },
-            'truco': {
-                'truco': 0, #
-                're_truco': 0,# 
-                'vale_cuatro': 0 # Max 1
-            }
-        }
-        self._ACCEPT = 'accept'
-        self._DONT_ACCEPT = 'dont_accept'
-        self._round: int = -1
-        self.hand: int = 0
         self._hand_player: Player
         self._foot_player: Player
-        self._cards_on_the_desk :  dict[int, Card] = {} # should optimize list with arrays if they could store objects
+
+        # Bet status management:
+        self._bet_values: dict[str, dict[str, int]] = {
+            ENVIDO: {
+                ENVIDO: 2,
+                REAL_ENVIDO:3,
+                # 'falta_envido': 0 Updates dinamically
+            },
+            TRUCO:{
+                TRUCO: 2,
+                RE_TRUCO: 3,
+                VALE_CUATRO: 4
+            }
+        }
+        self._bet_calls: BetCallsHistory = BetCallsHistory()
+        self.in_bet: bool = False
+
+        # Hand and round
+        self._round: int = -1
+        self.hand: int = 0
+
 
     ########PLAYERS MANAGEMENT########
     def _set_hand_and_foot_players(self) -> None:
@@ -63,19 +62,49 @@ class GameDesk:
         self.hand = 1
         new_row_cards: list[list[Card]] = self._deck.shuffle_cards()
         self._set_hand_and_foot_players()
-        default_options = {
-        "envdo": [
-            "envido",
-            "real_envido",
-            "falta_envido"
-        ],
-        "truco": "truco"
-        }
+        default_options: PlayerOptions = self._players_options_based_on_bet_calls()
         self._set_players_options(default_options)
         self._hand_player.set_cards(new_row_cards[0])
         self._foot_player.set_cards(new_row_cards[1])
         res = [self._hand_player.show_player_data(), self._foot_player.show_player_data()]
         return res
+
+    def _players_options_based_on_bet_calls(self) -> PlayerOptions:
+        '''deletes envido item from res if it completed it`s total calls'''
+        res: PlayerOptions = {}
+        envido_options: dict[int, str] = {}
+        truco_option: str = TRUCO
+        if self.hand == 1 and self._bet_calls.truco_calls.truco == 0: # if hand is 1 and there were no truco bet accepted:
+            envido_options = {
+                0: ENVIDO,
+                1: REAL_ENVIDO,
+                2: FALTA_ENVIDO,
+            }
+            if self._bet_calls.envido_calls.envido == 2:
+                del envido_options[0]
+            if self._bet_calls.envido_calls.real_envido:
+                if 0 in envido_options: del envido_options[0]
+                del envido_options[1]
+            if self._bet_calls.envido_calls.falta_envido:
+                if 0 in envido_options: del envido_options[0]
+                if 1 in envido_options: del envido_options[1]
+                del envido_options[2]
+
+        if self._bet_calls.truco_calls.truco:
+            truco_option = RE_TRUCO
+        elif self._bet_calls.truco_calls.re_truco:
+            truco_option = VALE_CUATRO
+        elif self._bet_calls.truco_calls.vale_cuatro: truco_option = ''
+
+        if self.in_bet: 
+            res["final_answer"] = {
+                0: ACCEPT,
+                1: DONT_ACCEPT
+            }
+        res[TRUCO] = truco_option
+        res[ENVIDO] = envido_options
+        return res
+    
 
 
     def show_player_data_by_id(self, id: int) -> PlayerStatus:
@@ -83,8 +112,15 @@ class GameDesk:
             return self._player_0.show_player_data()
         else:
             return self._player_1.show_player_data() 
+        
+    
+    def _set_players_options(self, options: PlayerOptions):
+        self._hand_player.set_options(options)
+        self._foot_player.set_options(options)
+    ##########################################
 
 
+    ########### CARDS AND ACTIONS ############
     def _add_to_compare_list(self, id: int, index: int) -> dict[str,  int | bool]:
         if id == 0:
             self._cards_on_the_desk[0] = self._player_0.remove_card(index)
@@ -107,14 +143,16 @@ class GameDesk:
         return  {"tie": False, 'winner': hand_winner} 
     
 
-    def _set_players_options(self, options: PlayerOptions):
-        self._hand_player.set_options(options)
-        self._foot_player.set_options(options)
 
     def receive_players_action(self, id: int, player_action: PlayersActions) -> dict[str,  int | bool]:
         if len(player_action.bet) > 0:
-            '''update players options''' 
-            return {}
+            if player_action.bet[0] in [TRUCO, ENVIDO]:
+                self.in_bet = True
+                self._bet_calls.upgrade_call(player_action.bet)
+                self._set_players_options(self._players_options_based_on_bet_calls())
+            else: # IT IS FINAL_ANSWER
+                pass
+                #TODO Handle final answer. Store last bet, Check if answr is accept or dont_accept, split the points correctly to each player
         if player_action.card_index >= 0:
             return self._add_to_compare_list(id, player_action.card_index)
         return {}
