@@ -166,3 +166,35 @@ class Desk :
         total_envido: int = 0
         id: int = id
     ```
+
+
+
+
+
+
+
+
+## WEB SOCKETS EXAMPLE:
+```python
+from fastapi import FastAPI, WebSocket
+
+app = FastAPI()
+
+@app.websocket("/ws")
+async def websocket_endpoint(ws: WebSocket):
+    await ws.accept()
+    await ws.send_json({"event": "welcome"})
+```
+
+```js
+useEffect(() => {
+  const socket = new WebSocket("ws://localhost:8000/ws");
+
+  socket.onmessage = (msg) => {
+    const data = JSON.parse(msg.data);
+    console.log("Server event:", data);
+  };
+
+  return () => socket.close();
+}, []);
+```

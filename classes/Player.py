@@ -26,6 +26,7 @@ class Player():
 
     def add_points(self, points: int):
         self._points += points
+        if self._points > 30: self.points = 30
 
 
     def show_player_data(self) -> PlayerStatus:
@@ -72,6 +73,9 @@ class Player():
                 total_envido += card.envido_value
             total_envido+= 20 
         self._total_envido = total_envido
+
+    def get_envido(self) -> int:
+        return self._total_envido
 #--------------------------------------------------
   
     def remove_card(self, i:int) -> Card:
@@ -80,3 +84,5 @@ class Player():
     
     def set_options(self, options: PlayerOptions) -> None:
         self._options = options
+
+    def get_points(self) -> int: return self._points

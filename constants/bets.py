@@ -1,5 +1,6 @@
 ACCEPT = 'accept'
 DONT_ACCEPT = 'dont_accept'
+FINAL_ANSWER = 'final_answer'
 ENVIDO = 'envido'
 REAL_ENVIDO = 'real_envido'
 FALTA_ENVIDO = 'falta_envido'
