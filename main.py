@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket
 from connections import users_example
 from classes.GameDesk import GameDesk
 from classes.PlayersActions import PlayersActions
@@ -41,4 +41,14 @@ def player_throws_card(body: Item):
 def player_by_id(id: int):
     return desk.show_player_data_by_id(id)
 
+@app.get("/desk-status")
+def desk_status():
+    return desk.see_desk_status()
 
+
+
+@app.websocket("/ws")
+async def websocket_endpoint(ws: WebSocket):
+    await ws.accept()
+    await ws.send_json({"event": "welcome"})
+    

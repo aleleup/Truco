@@ -156,15 +156,15 @@ class Desk :
     1) Contain players options and card
     - Default options must be same for both players on every row... but on each action (only if an option was selected)
     then it they must be updated for both of them depending on the games logic
-    - Default options: ```{'envdo': ['envido', 'real_envido','falta_envido'], 'truco': 'truco'}
-        ``` 
-    - Now, to update the options, the player wold need to know by the middleware what the other player has betted. Perhaps this is a `Desk` responsability.
+    - `_is_player_turn` will allow the front-end to know witch instance of a player can send requests to the server (via web-sockets).
 
     ```python
         _cards: list[Card] = []
         _points: int = 0
-        total_envido: int = 0
-        id: int = id
+        _total_envido: int = 0
+        _id: int = id
+        _options: PlayerOptions = {}
+        _is_player_turn: bool = False
     ```
 
 

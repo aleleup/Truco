@@ -7,6 +7,7 @@ class Player():
         self._total_envido: int = 0
         self._id: int = id
         self._options: PlayerOptions = {}
+        self._is_player_turn: bool = False
     def show_cards(self) -> list[dict[str, str | int]]: 
         res: list[dict[str, str | int]] = []
         for card in self._cards:
@@ -35,7 +36,8 @@ class Player():
             "points": self._points,
             "cards": self.show_cards(),
             "options": self._options,
-            "envido": self._total_envido
+            "envido": self._total_envido,
+            "is_player_turn": self._is_player_turn
         }
     
     # --------ENVIDO METHODS----------
@@ -86,3 +88,5 @@ class Player():
         self._options = options
 
     def get_points(self) -> int: return self._points
+
+    def toggle_turn(self) -> None: self._is_player_turn = not self._is_player_turn
