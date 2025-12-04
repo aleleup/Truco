@@ -30,7 +30,7 @@ class Player():
         if self._points > 30: self.points = 30
 
 
-    def show_player_data(self) -> PlayerStatus:
+    def status(self) -> PlayerStatus:
         return {
             "player_id": self._id,
             "points": self._points,

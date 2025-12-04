@@ -34,14 +34,11 @@ class GameDesk:
         # self._turn_counter: int = 0
 
 
-
-    ###########   DEBUGING   ###########      
-    def see_desk_status(self):
-        return {
-            "hand": self._hand,
-            "round": self._round
-        }
-    ########PLAYERS MANAGEMENT########
+    ######## DESK STATUS ########
+    def get_round(self)-> int: return self._round
+    def get_hand(self)-> int: return self._hand
+    def game_over(self) -> bool: return False
+    ######## PLAYERS MANAGEMENT ########
     def _set_hand_and_foot_players(self) -> None:
         if self._round % 2 == 0:
             self._hand_player = self._player_0
@@ -54,7 +51,7 @@ class GameDesk:
 
 
     def players_status(self) -> list[PlayerStatus]:
-        res = [self._hand_player.show_player_data(), self._foot_player.show_player_data()]
+        res = [self._hand_player.status(), self._foot_player.status()]
         return res 
 
     def init_row(self):
@@ -66,7 +63,6 @@ class GameDesk:
         self._set_players_options(default_options)
         self._hand_player.set_cards(new_row_cards[0])
         self._foot_player.set_cards(new_row_cards[1])
-        return self.see_desk_status()
 
     def _players_options_based_on_bet_calls(self) -> PlayerOptions:
         '''deletes envido item from res if it completed it`s total calls'''
@@ -106,11 +102,11 @@ class GameDesk:
     
 
 
-    def show_player_data_by_id(self, id: int) -> PlayerStatus:
+    def player_status(self, id: int) -> PlayerStatus:
         if id == 0:
-            return self._player_0.show_player_data()
+            return self._player_0.status()
         else:
-            return self._player_1.show_player_data() 
+            return self._player_1.status() 
         
     
     def _set_players_options(self, options: PlayerOptions):

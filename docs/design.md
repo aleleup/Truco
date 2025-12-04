@@ -322,3 +322,17 @@ ws.onmessage = (event) => {
   console.log("Received:", event.data);
 };
 ```
+
+
+
+
+
+### User Stories:
+ * Lobby:
+    - A client enters the web-page and sends a connection request to /enter-lobby
+    - The client is asigned to an id (0 or 1) and then it awaits until there are two players in the lobby
+    - When there are two players, a message will be brodcasted to both ```{"allow-access": true}```
+    - Players get redirected to /desk-table in the page
+
+ * Desk Table:
+  - Where game is developped. Players receive cards and exchange information with the proccessing of `GameDesk` as a middleware
