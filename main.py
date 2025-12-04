@@ -58,8 +58,8 @@ class PlayerActionModel(BaseModel):
 async def send_players_status(game_desk:GameDesk, connection_manager: ConnectionManager):
     for id in [0,1]: 
             status: PlayerStatus = game_desk.player_status(id)
+            print("PLAYER_STATUS", status)
             await connection_manager.send_to(id, json.dumps(status))
-    
 
 
 ####### USAGE OF WEB-SOCKETS #######
@@ -123,24 +123,22 @@ if __name__ == "main":
     @app.websocket("/playground/{id}")
     async def start_game(websocket: WebSocket, id: int):
         await players_middleware.connect(id, websocket)
+        if players_middleware.connections_amount() == 2:
+            desk.init_row()
+            await send_players_status(desk, players_middleware)
         try:
-            while players_middleware.connections_amount() == 2 and not desk.game_over():
-                print("new row")
-                desk.init_row()
+            while True:  # keep this socket alive forever
+                raw = await websocket.receive_text()
+
+                player_action: ActionPayload = json.loads(raw)
+                card_index: int = player_action["card_index"]
+                bet: list[str] = player_action["bet"]
+
+                new_action = PlayersActions(card_index, bet)
+                desk.receive_players_action(id, new_action)
                 await send_players_status(desk, players_middleware)
-                while desk.get_hand() <= 3:
-                    raw_players_data: str = await websocket.receive_text() # Only one player at a time will send data because of the parameter of each player `can_play`
-                    player_action: ActionPayload = json.loads(raw_players_data)
-                    card_index: int = (player_action["card_index"])
-                    bet: list[str] = player_action["bet"]
-
-
-                    new_action = PlayersActions(card_index, bet)
-
-                    desk.receive_players_action(id, new_action)
-                    await send_players_status(desk, players_middleware)
-                    # await test_manager.send_to(target_id, result)
-
+        
         except WebSocketDisconnect:
-            print("ERROR")
-            await host.disconnect(id)
+            await players_middleware.disconnect(id)
+
+
