@@ -107,7 +107,7 @@ if __name__ == "main":
         
         try:
             if host.connections_amount() == 2:
-                    message: dict[str, bool] = {"allow-access": True} 
+                    message: dict[str, bool] = {"allow_access": True} 
                     await host.broadcast(json.dumps(message))
                     await host.shutdown()
                     return
