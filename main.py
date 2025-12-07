@@ -1,4 +1,4 @@
-import json
+import json, asyncio
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from classes.GameDesk import GameDesk
 from classes.PlayersActions import PlayersActions
@@ -60,6 +60,7 @@ async def send_players_status(game_desk:GameDesk, connection_manager: Connection
             status: PlayerStatus = game_desk.player_status(id)
             print("PLAYER_STATUS", status)
             await connection_manager.send_to(id, json.dumps(status))
+            await asyncio.sleep(0.2)
 
 
 ####### USAGE OF WEB-SOCKETS #######
@@ -102,15 +103,19 @@ if __name__ == "main":
     @app.websocket("/enter-lobby/{id}")
     async def receive_player(websocket: WebSocket, id:str):
         new_id: int = 1 if host.connections_amount() > 0 else 0
+        print("CONNECTION NEW ID", new_id)
         await host.connect(new_id, websocket) # send them into the lobby and return their new id
         await host.send_to(new_id, json.dumps({"new_id": new_id}))
         
         try:
             if host.connections_amount() == 2:
-                    message: dict[str, bool] = {"allow_access": True} 
-                    await host.broadcast(json.dumps(message))
-                    await host.shutdown()
-                    return
+                await host.broadcast(json.dumps({"allow_access": True}))
+
+                # Give the OS time to flush frames --> AI HELP
+                await asyncio.sleep(0.2)
+
+                await host.shutdown()
+                return
             while True:
                 if websocket.client_state.name == "CONNECTED":
                     await websocket.receive_text()
@@ -122,8 +127,11 @@ if __name__ == "main":
     players_middleware: ConnectionManager = ConnectionManager(2)
     @app.websocket("/playground/{id}")
     async def start_game(websocket: WebSocket, id: int):
-        await players_middleware.connect(id, websocket)
+        print(f"{id} arrived")
+        await players_middleware.connect(int(id), websocket)
+
         if players_middleware.connections_amount() == 2:
+            print("THERE ARE TWO")
             desk.init_row()
             await send_players_status(desk, players_middleware)
         try:
@@ -131,6 +139,8 @@ if __name__ == "main":
                 raw = await websocket.receive_text()
 
                 player_action: ActionPayload = json.loads(raw)
+                print("player action received: ", player_action)
+                print(type(player_action["card_index"]))
                 card_index: int = player_action["card_index"]
                 bet: list[str] = player_action["bet"]
 

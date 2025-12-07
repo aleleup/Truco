@@ -92,7 +92,7 @@ class GameDesk:
         elif self._bet_calls.vale_cuatro: truco_option = ''
 
         if self._in_bet: 
-            res["final_answer"] = {
+            res[FINAL_ANSWER] = {
                 0: ACCEPT,
                 1: DONT_ACCEPT
             }
