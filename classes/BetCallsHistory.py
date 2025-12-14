@@ -18,9 +18,11 @@ class BetCallsHistory:
         }
         self.latest: list[str] = []
     def upgrade_call(self, bet:list[str]):
-        if bet[1] == ENVIDO: self.envido += 1
-        if bet[1] == REAL_ENVIDO: self.real_envido += 1
-        if bet[1] == FALTA_ENVIDO: self.falta_envido += 1
+        if bet[0] == ENVIDO:
+            if bet[1] == ENVIDO: self.envido += 1
+            if bet[1] == REAL_ENVIDO: self.real_envido += 1
+            if bet[1] == FALTA_ENVIDO: self.falta_envido += 1
+            self._set_truco_bets_to_zero()
         if bet[1] == TRUCO: self.truco += 1
         if bet[1] == RE_TRUCO: self.re_truco += 1
         if bet[1] == VALE_CUATRO: self.vale_cuatro += 1
@@ -39,3 +41,9 @@ class BetCallsHistory:
         if self.re_truco: return self._bet_values[RE_TRUCO]
         if self.truco: return self._bet_values[TRUCO]
         return 1
+    
+
+    def _set_truco_bets_to_zero(self):
+        self.truco = 0
+        self.re_truco = 0
+        self.vale_cuatro = 0

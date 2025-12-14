@@ -1,7 +1,6 @@
 import json, asyncio
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from classes.GameDesk import GameDesk
-from classes.PlayersActions import PlayersActions
 from classes.ConnectionManager import ConnectionManager
 from constants.types import *
 from pydantic import BaseModel
@@ -141,10 +140,8 @@ if __name__ == "main":
                 player_action: ActionPayload = json.loads(raw)
                 print("player action received: ", player_action)
                 print(type(player_action["card_index"]))
-                card_index: int = player_action["card_index"]
-                bet: list[str] = player_action["bet"]
-
-                new_action = PlayersActions(card_index, bet)
+                
+                new_action = PlayersActions(**player_action) # Possible bug
                 desk.receive_players_action(id, new_action)
                 await send_players_status(desk, players_middleware)
         

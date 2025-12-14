@@ -8,7 +8,8 @@ class Player():
         self._id: int = id
         self._options: PlayerOptions = {}
         self._is_player_turn: bool = False
-    def show_cards(self) -> list[dict[str, str | int]]: 
+        
+    def _show_cards(self) -> list[dict[str, str | int]]: 
         res: list[dict[str, str | int]] = []
         for card in self._cards:
             card_data: dict[str, str | int] = {
@@ -34,11 +35,12 @@ class Player():
         return {
             "player_id": self._id,
             "points": self._points,
-            "cards": self.show_cards(),
+            "cards": self._show_cards(),
             "options": self._options,
             "envido": self._total_envido,
             "is_player_turn": self._is_player_turn
         }
+
     
     # --------ENVIDO METHODS----------
     def _pop_lowest_envido_val(self, l:list[Card]) -> None:
