@@ -8,7 +8,8 @@ class Player():
         self._id: int = id
         self._options: PlayerOptions = {}
         self._is_player_turn: bool = False
-        
+        self._can_throw_cards: bool = True
+        self._has_quiero: bool = True 
     def _show_cards(self) -> list[dict[str, str | int]]: 
         res: list[dict[str, str | int]] = []
         for card in self._cards:
@@ -31,14 +32,15 @@ class Player():
         if self._points > 30: self.points = 30
 
 
-    def status(self) -> PlayerStatus:
+    def status(self, in_bet: bool) -> PlayerStatus:
         return {
             "player_id": self._id,
             "points": self._points,
             "cards": self._show_cards(),
             "options": self._options,
             "envido": self._total_envido,
-            "is_player_turn": self._is_player_turn
+            "is_player_turn": self._is_player_turn,
+            "can_throw_cards": not in_bet,
         }
 
     
@@ -92,3 +94,5 @@ class Player():
     def get_points(self) -> int: return self._points
 
     def toggle_turn(self) -> None: self._is_player_turn = not self._is_player_turn
+
+    def get_id(self): return self._id
