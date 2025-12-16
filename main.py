@@ -57,7 +57,6 @@ class PlayerActionModel(BaseModel):
 async def send_players_status(game_desk:GameDesk, connection_manager: ConnectionManager):
     for id in [0,1]: 
             status: PlayerStatus = game_desk.player_status(id)
-            print("PLAYER_STATUS", status)
             await connection_manager.send_to(id, json.dumps(status))
             await asyncio.sleep(0.2)
 

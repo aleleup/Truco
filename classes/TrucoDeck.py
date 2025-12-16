@@ -89,13 +89,13 @@ class TrucoDeck:
             
     def shuffle_cards(self) -> list[list[Card]]:
         '''Returns 2 lists of 3 diferent cards'''
-
+        print("CARDS ", len(self.cards))
         hand_player_cards: list[Card] = []
         foot_player_cards: list[Card] = []
 
         response: list[list[Card]] = [hand_player_cards, foot_player_cards]
+        cards_index_in_use: list[int] = []
         for players_card in response:
-            cards_index_in_use: list[int] = []
             i: int = 0
             while i < 3:
                 card_index: int = randint(0, len(self.cards) - 1)

@@ -96,3 +96,5 @@ class Player():
     def toggle_turn(self) -> None: self._is_player_turn = not self._is_player_turn
 
     def get_id(self): return self._id
+
+    def set_turn(self, b:bool) -> None: self._is_player_turn = b

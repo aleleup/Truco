@@ -57,7 +57,7 @@ class GameDesk:
         
         
     def receive_players_action(self, id: int, player_action: PlayersActions) -> None:
-        print(player_action.model_dump())
+        print(player_action.model_dump(), id)
         if len(player_action.bet) > 0:
             self._add_to_bet_list(id, player_action.bet)
         if player_action.card_index >= 0:
@@ -65,11 +65,12 @@ class GameDesk:
             print("CARDS ON THE DESK: ", self._cards_on_the_desk)
             if len(self._cards_on_the_desk[0]) == len(self._cards_on_the_desk[1]):
                 winner_id: int = self._compare_cards_and_return_winner() # returns -1 if none winner yet. else 0 or 1
-                print(winner_id)
+                self._set_turn_to_round_winner()
                 if winner_id in [0,1]:
                     self._add_points_to_truco_winner(winner_id)
-
-        self._toggle_players_turn()
+                    # self.init_row()
+            else: 
+                self._toggle_players_turn()
         self._set_players_options()
 
 
@@ -132,6 +133,20 @@ class GameDesk:
         self._hand_player.toggle_turn()
         self._foot_player.toggle_turn()
 
+    def _set_turn_to_round_winner(self) -> None:
+        last_card_0: Card = self._cards_on_the_desk[0][-1]
+        last_card_1: Card = self._cards_on_the_desk[1][-1]
+
+        if last_card_0.value == last_card_1.value: self._toggle_players_turn()
+        elif last_card_0.value > last_card_1.value:
+            self._player_0.set_turn(True)
+            self._player_1.set_turn(False)
+
+        else:
+            self._player_1.set_turn(True)
+            self._player_0.set_turn(False)
+
+
     ##########################################
 
     ########### CARDS AND ACTIONS ############
@@ -139,7 +154,7 @@ class GameDesk:
         if id == 0:
             self._cards_on_the_desk[0].append(self._player_0.remove_card(index))
         else:
-            self._cards_on_the_desk[1].append(self._player_0.remove_card(index))
+            self._cards_on_the_desk[1].append(self._player_1.remove_card(index))
 
     
 
@@ -182,9 +197,6 @@ class GameDesk:
     def _has_greater_card_value_at_index(self, x:int, y:int, card_index: int) -> bool: 
         '''PC RESTARTING NOW!!!'''
         return self._cards_on_the_desk[x][card_index].value > self._cards_on_the_desk[y][card_index].value
-    
-
-
 
     ################################################
     
