@@ -32,11 +32,12 @@ class GameDesk:
         self._hand: int = 0
         # self._turn_counter: int = 0
 
+
+        self._game_over: bool = False
     #################### PUBLIC METHODS ####################
 
     def get_round(self)-> int: return self._round
     def get_hand(self)-> int: return self._hand
-    def game_over(self) -> bool: return False
 
     def init_row(self):
         self._round += 1
@@ -74,18 +75,17 @@ class GameDesk:
         self._toggle_players_turn()
         self._set_players_options()
 
-    # def get_general_view(self) -> list[dict[str, int | list[Card] | str]]:
-    #     res = []
-    #     i: int = 0
-    #     for player in [self._player_0, self._player_1]:
-    #         public_data: dict[str, int | list[list[Card]] | str] = {
-    #             "cards": self._cards_on_the_desk[i],
-    #             "points": player.get_points()
-
-    #         }
-    #     i+=1
+    def get_general_view(self) -> dict[str, list[PlayerPublicData] | bool]:
+        players_public_data: list[PlayerPublicData] = []
+        for i in [0, 1]:
+            public_data: PlayerPublicData = {
+                'cards_on_desk': self._show_cards(self._cards_on_the_desk[i]),
+                'last_bet': self._bet_calls.latest_by_id[i],
+                'points': self._get_player_by_id(i).get_points()
+            }
+            players_public_data.append(public_data)
         
-    #     return res
+        return {'players_public_data': players_public_data, 'game_over': self._game_over}
 
     ########################################################
 
@@ -251,3 +251,15 @@ class GameDesk:
             # self._bet_on_the_desk[id] = bet
             self._bet_calls.upgrade_call(bet)
         self._set_players_options()
+        self._bet_calls.latest_by_id[id] = bet[1]
+
+    def _get_player_by_id(self, id: int) -> Player:
+        if id == 0: return self._player_0
+        else: return self._player_1
+
+    ########## Code replicated!!!! ####### HOT FIX
+    def _show_cards(self, cards: list[Card]) -> list[dict[str, str | int]]: 
+        res: list[dict[str, str | int]] = []
+        for card in cards:
+            res.append(card.to_dict())
+        return res

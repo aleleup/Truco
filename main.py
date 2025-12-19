@@ -122,11 +122,12 @@ if __name__ == "main":
             await host.disconnect(new_id)
     
 
-    public_view_manager: ConnectionManager = ConnectionManager(2)
+    public_data_manager: ConnectionManager = ConnectionManager(2)
     @app.websocket("/public-view/{client_id}")
     async def public_views(websocket: WebSocket, client_id: int):
-        await public_view_manager.connect(client_id, websocket)
-
+        await public_data_manager.connect(client_id, websocket)
+        if players_middleware.connections_amount() == 2 and public_data_manager.connections_amount() == 2:
+            await brodcast_public_data(public_data_manager)
         try:
             while True:
                 await websocket.receive_text()
@@ -134,7 +135,11 @@ if __name__ == "main":
                 # await handle_message(client_id, data)
 
         except WebSocketDisconnect:
-            await public_view_manager.disconnect(client_id)
+            await public_data_manager.disconnect(client_id)
+
+    async def brodcast_public_data(connection_managger: ConnectionManager):
+        general_public_data:str = json.dumps(desk.get_general_view())
+        await connection_managger.broadcast(general_public_data)
 
 
     desk: GameDesk = GameDesk()
@@ -156,10 +161,10 @@ if __name__ == "main":
                 print("player action received: ", player_action)
                 print(type(player_action["card_index"]))
                 
-                new_action = PlayersActions(**player_action) # Possible bug
+                new_action = PlayersActions(**player_action)
                 desk.receive_players_action(id, new_action)
                 await send_players_status(desk, players_middleware)
-        
+                await brodcast_public_data(public_data_manager)
         except WebSocketDisconnect:
             await players_middleware.disconnect(id)
 

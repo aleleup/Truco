@@ -16,6 +16,7 @@ class BetCallsHistory:
             VALE_CUATRO: 4
         }
         self.latest: list[str] = []
+        self.latest_by_id: dict[int, str] = {0: '', 1: ''}
     def upgrade_call(self, bet:list[str]):
         if bet[0] == ENVIDO:
             if bet[1] == ENVIDO: self.envido += 1

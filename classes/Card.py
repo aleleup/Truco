@@ -1,4 +1,5 @@
 from constants.emojis import *
+from constants.types import CardDict
 class Card:
     # name: str
     # value: int
@@ -18,7 +19,7 @@ class Card:
         self.envido_value: int = envido_value
         self.ascii_art: str = ascii_art
 
-    def to_dict(self) -> dict[str, str | int]:
+    def to_dict(self) -> CardDict:
         return {
             'name': self.name,
             'value': self.value,
