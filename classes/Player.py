@@ -13,13 +13,7 @@ class Player():
     def _show_cards(self) -> list[dict[str, str | int]]: 
         res: list[dict[str, str | int]] = []
         for card in self._cards:
-            card_data: dict[str, str | int] = {
-                'name': card.name,
-                'value': card.value,
-                'type': card.type,
-                'envido_value': card.envido_value
-            }
-            res.append(card_data)
+            res.append(card.to_dict())
         return res
     
 

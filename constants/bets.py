@@ -1,6 +1,6 @@
 ACCEPT = 'Quiero'
 DONT_ACCEPT = 'No Quiero'
-FINAL_ANSWER = 'Responder'
+FINAL_ANSWER = [ACCEPT, DONT_ACCEPT]
 ENVIDO = 'Envido'
 REAL_ENVIDO = 'Real Envido'
 FALTA_ENVIDO = 'Falta Envido'

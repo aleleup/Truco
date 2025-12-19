@@ -1,6 +1,7 @@
 from constants.emojis import * 
 from constants.types import *
 from classes.Card import Card
+from constants.cards import card_ascii_art
 from random import randint
 class TrucoDeck:
     def __init__(self) -> None:
@@ -36,7 +37,7 @@ class TrucoDeck:
 
     def _add_to_deck(self, type_list: list[str], card_num:int, card_value: int, envido_value: int):
         for type in type_list:
-            new_card: Card = Card(card_num, type, card_value, envido_value)
+            new_card: Card = Card(card_num, type, card_value, envido_value, card_ascii_art[f'{card_num}&{type}'])
             self.cards.append(new_card)
 
     def create_deck(self) -> None:

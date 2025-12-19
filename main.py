@@ -121,6 +121,22 @@ if __name__ == "main":
         except WebSocketDisconnect:
             await host.disconnect(new_id)
     
+
+    public_view_manager: ConnectionManager = ConnectionManager(2)
+    @app.websocket("/public-view/{client_id}")
+    async def public_views(websocket: WebSocket, client_id: int):
+        await public_view_manager.connect(client_id, websocket)
+
+        try:
+            while True:
+                await websocket.receive_text()
+                # data: {"to": int, "from": int, "payload": data}
+                # await handle_message(client_id, data)
+
+        except WebSocketDisconnect:
+            await public_view_manager.disconnect(client_id)
+
+
     desk: GameDesk = GameDesk()
     players_middleware: ConnectionManager = ConnectionManager(2)
     @app.websocket("/playground/{id}")

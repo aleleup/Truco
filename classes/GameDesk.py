@@ -41,6 +41,7 @@ class GameDesk:
     def init_row(self):
         self._round += 1
         self._hand = 1
+        self._last_bet_accepted = False
         new_row_cards: list[list[Card]] = self._deck.shuffle_cards()
         self._set_hand_and_foot_players()
         self._set_players_options()
@@ -68,11 +69,23 @@ class GameDesk:
                 self._set_turn_to_round_winner()
                 if winner_id in [0,1]:
                     self._add_points_to_truco_winner(winner_id)
-                    # self.init_row()
-            else: 
-                self._toggle_players_turn()
+                    self.init_row()
+                return    
+        self._toggle_players_turn()
         self._set_players_options()
 
+    # def get_general_view(self) -> list[dict[str, int | list[Card] | str]]:
+    #     res = []
+    #     i: int = 0
+    #     for player in [self._player_0, self._player_1]:
+    #         public_data: dict[str, int | list[list[Card]] | str] = {
+    #             "cards": self._cards_on_the_desk[i],
+    #             "points": player.get_points()
+
+    #         }
+    #     i+=1
+        
+    #     return res
 
     ########################################################
 
@@ -89,14 +102,14 @@ class GameDesk:
         else:
             self._hand_player = self._player_1
             self._foot_player = self._player_0
-        self._hand_player.toggle_turn()
-
+        self._hand_player.set_turn(True)
+        self._foot_player.set_turn(False)
    
     def _players_options_based_on_bet_calls(self) -> PlayerOptions:
         '''deletes envido item from res if it completed it`s total calls'''
         res: PlayerOptions = {}
         envido_options: list[str] = []
-        truco_option: str = TRUCO
+        truco_option: list[str] = [TRUCO]
         if self._hand == 1 and not self._last_bet_accepted : # if hand is 1 and there were no truco bet accepted:
             envido_options = [ENVIDO, REAL_ENVIDO, FALTA_ENVIDO]
             if self._bet_calls.envido == 2:
@@ -110,14 +123,15 @@ class GameDesk:
                 envido_options.pop(0)
 
         if self._bet_calls.truco:
-            truco_option = RE_TRUCO
+            truco_option = [RE_TRUCO]
         if self._bet_calls.re_truco:
-            truco_option = VALE_CUATRO
-        if self._bet_calls.vale_cuatro: truco_option = ''
+            truco_option = [VALE_CUATRO]
+        if self._bet_calls.vale_cuatro: truco_option = []
 
         if self._in_bet: 
-            res[FINAL_ANSWER] = [ACCEPT, DONT_ACCEPT]
-
+            if self._bet_calls.latest[0] == TRUCO: truco_option += [ACCEPT, DONT_ACCEPT]
+            if self._bet_calls.latest[0] == ENVIDO: envido_options += [ACCEPT, DONT_ACCEPT]
+            
         res[TRUCO] = truco_option
         res[ENVIDO] = envido_options
         return res
@@ -225,11 +239,11 @@ class GameDesk:
     
     def _add_to_bet_list(self, id: int, bet: list[str]):
         print(bet)
-        if bet[0] == FINAL_ANSWER:
+        if bet[1] in FINAL_ANSWER:
             print("TURNING BET OFF") 
             self._in_bet = False
             self._last_bet_accepted = True # Need this so none envido options is shown
-            if self._bet_calls.latest[0] == ENVIDO:
+            if bet[0] == ENVIDO:
                 self._add_points_to_envido_winner()
             # if self._bet_calls.latest[0] == TRUCO: Point will be added when the row finishes
         else:

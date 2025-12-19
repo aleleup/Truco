@@ -8,7 +8,6 @@ class BetCallsHistory:
         self.real_envido: int = 0
         self.falta_envido: int = 0
         self._bet_values: dict[str, int] = {
-        
             ENVIDO: 2,
             REAL_ENVIDO:3,
             # 'falta_envido': 0 Updates dinamically
