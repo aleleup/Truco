@@ -101,7 +101,7 @@ class GameDesk:
             self._foot_player = self._player_1
         else:
             self._hand_player = self._player_1
-            self._foot_player = self._player_0
+            # self._foot_player = self._player_0
         self._hand_player.set_turn(True)
         self._foot_player.set_turn(False)
    
