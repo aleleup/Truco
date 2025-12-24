@@ -3,7 +3,7 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from classes.GameDesk import GameDesk
 from classes.ConnectionManager import ConnectionManager
 from constants.types import *
-from classes.TrucoDeck import TrucoDeck
+# from classes.TrucoDeck import TrucoDeck
 ############# AUX-FUNCTIONS #############
 async def send_players_status(game_desk:GameDesk, connection_manager: ConnectionManager):
     for id in [0,1]: 
@@ -91,20 +91,3 @@ if __name__ == "main":
 
 
 
-def test_shuffle():
-    deck = TrucoDeck()
-    deck.create_deck()
-    i = 0
-    while True:
-        cards = deck.shuffle_cards()
-        print(i)
-        for card in cards[0]:
-            if card in cards[1]: 
-                print(card, cards[1])
-                return "FAIL DETECTED"
-
-        if i == 1000000: return "ALL OK"
-        i+=1 
-
-
-print(test_shuffle())

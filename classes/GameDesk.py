@@ -240,6 +240,7 @@ class GameDesk:
             if bet[0] == ENVIDO:
                 self._add_points_to_envido_winner()
             # if self._bet_calls.latest[0] == TRUCO: Point will be added when the row finishes
+        
         else:
             self._in_bet = True
             # self._bet_on_the_desk[id] = bet
@@ -250,6 +251,8 @@ class GameDesk:
     def _get_player_by_id(self, id: int) -> Player:
         if id == 0: return self._player_0
         else: return self._player_1
+
+        
 
     ########## Code replicated!!!! ####### HOT FIX
     def _show_cards(self, cards: list[Card]) -> list[dict[str, str | int]]: 

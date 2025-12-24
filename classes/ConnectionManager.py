@@ -15,6 +15,7 @@ class ConnectionManager:
 
 
     async def connect(self, client_id: int, websocket: WebSocket):
+        print("Connection attempt")
         if client_id >= self._max_size or self._connections == self._max_size: return
         await websocket.accept()
         self._active_connections[client_id] = websocket
