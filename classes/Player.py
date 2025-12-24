@@ -18,6 +18,7 @@ class Player():
     
 
     def set_cards(self, cards: list[Card]) -> None:
+        # self._cards.clear()
         self._cards = cards
         self._calc_envido()
 

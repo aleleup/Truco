@@ -36,9 +36,6 @@ class GameDesk:
         self._game_over: bool = False
     #################### PUBLIC METHODS ####################
 
-    def get_round(self)-> int: return self._round
-    def get_hand(self)-> int: return self._hand
-
     def init_row(self):
         self._round += 1
         self._hand = 1
@@ -46,6 +43,7 @@ class GameDesk:
         new_row_cards: list[list[Card]] = self._deck.shuffle_cards()
         self._set_hand_and_foot_players()
         self._set_players_options()
+        print("DEBUG", self._show_cards(new_row_cards[0]), self._show_cards(new_row_cards[1]))
         self._hand_player.set_cards(new_row_cards[0])
         self._foot_player.set_cards(new_row_cards[1])
 
@@ -59,23 +57,22 @@ class GameDesk:
         
         
     def receive_players_action(self, id: int, player_action: PlayersActions) -> None:
-        print(player_action.model_dump(), id)
         if len(player_action.bet) > 0:
             self._add_to_bet_list(id, player_action.bet)
         if player_action.card_index >= 0:
             self._add_to_compare_list(id, player_action.card_index)
-            print("CARDS ON THE DESK: ", self._cards_on_the_desk)
             if len(self._cards_on_the_desk[0]) == len(self._cards_on_the_desk[1]):
                 winner_id: int = self._compare_cards_and_return_winner() # returns -1 if none winner yet. else 0 or 1
                 self._set_turn_to_round_winner()
                 if winner_id in [0,1]:
                     self._add_points_to_truco_winner(winner_id)
+                    self._clear_public_data()
                     self.init_row()
                 return    
         self._toggle_players_turn()
         self._set_players_options()
 
-    def get_general_view(self) -> dict[str, list[PlayerPublicData] | bool]:
+    def get_general_view(self) -> dict[str, list[PlayerPublicData] | bool | int]:
         players_public_data: list[PlayerPublicData] = []
         for i in [0, 1]:
             public_data: PlayerPublicData = {
@@ -85,7 +82,7 @@ class GameDesk:
             }
             players_public_data.append(public_data)
         
-        return {'players_public_data': players_public_data, 'game_over': self._game_over}
+        return {'players_public_data': players_public_data, 'game_over': self._game_over, 'round': self._round}
 
     ########################################################
 
@@ -101,7 +98,7 @@ class GameDesk:
             self._foot_player = self._player_1
         else:
             self._hand_player = self._player_1
-            # self._foot_player = self._player_0
+            self._foot_player = self._player_0
         self._hand_player.set_turn(True)
         self._foot_player.set_turn(False)
    
@@ -232,15 +229,12 @@ class GameDesk:
     def _compare_envidos_return_winner_and_looser(self) -> list[Player]:
         hand_player_envido: int = self._hand_player.get_envido()
         foot_player_envido: int = self._foot_player.get_envido()
-        print(hand_player_envido, foot_player_envido)
         if hand_player_envido == foot_player_envido: return [self._hand_player, self._foot_player]
         elif hand_player_envido > foot_player_envido: return [self._hand_player, self._foot_player] 
         else: return [self._foot_player, self._hand_player]
     
     def _add_to_bet_list(self, id: int, bet: list[str]):
-        print(bet)
         if bet[1] in FINAL_ANSWER:
-            print("TURNING BET OFF") 
             self._in_bet = False
             self._last_bet_accepted = True # Need this so none envido options is shown
             if bet[0] == ENVIDO:
@@ -263,3 +257,9 @@ class GameDesk:
         for card in cards:
             res.append(card.to_dict())
         return res
+    
+
+    def _clear_public_data(self) -> None:
+        for i in self._cards_on_the_desk:
+            self._cards_on_the_desk[i].clear()
+            self._bet_calls.latest_by_id[i] = ''
