@@ -7,3 +7,4 @@ FALTA_ENVIDO = 'Falta Envido'
 TRUCO = 'Truco'
 RE_TRUCO = 'Re Truco'
 VALE_CUATRO = 'Vale Cuatro'
+ABANDON = "Mazo"

@@ -10,6 +10,7 @@ class Player():
         self._is_player_turn: bool = False
         self._can_throw_cards: bool = True
         self._has_quiero: bool = True 
+
     def _show_cards(self) -> list[dict[str, str | int]]: 
         res: list[dict[str, str | int]] = []
         for card in self._cards:
@@ -36,6 +37,7 @@ class Player():
             "envido": self._total_envido,
             "is_player_turn": self._is_player_turn,
             "can_throw_cards": not in_bet,
+            "has_quiero": self._has_quiero
         }
 
     
@@ -78,18 +80,26 @@ class Player():
     def get_envido(self) -> int:
         return self._total_envido
 #--------------------------------------------------
-  
+# SETTERS
+    def set_turn(self, b:bool) -> None: self._is_player_turn = b
+
+    def set_options(self, options: PlayerOptions) -> None:
+        self._options = options
+    
+    def toggle_turn(self) -> None: self._is_player_turn = not self._is_player_turn
+
+    def toggle_quiero(self) -> None: self._has_quiero = not self._has_quiero
+
     def remove_card(self, i:int) -> Card:
         print(self._cards)
         return self._cards.pop(i)
-    
-    def set_options(self, options: PlayerOptions) -> None:
-        self._options = options
-
+    def set_default_bool_values(self) -> None:
+        # self._can_throw_cards = True
+        self._has_quiero = True 
+#--------------------------------------------------
+# GETTERS
     def get_points(self) -> int: return self._points
-
-    def toggle_turn(self) -> None: self._is_player_turn = not self._is_player_turn
 
     def get_id(self): return self._id
 
-    def set_turn(self, b:bool) -> None: self._is_player_turn = b
+    def cards_amount(self) -> int: return len(self._cards)

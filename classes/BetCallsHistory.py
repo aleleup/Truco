@@ -34,6 +34,8 @@ class BetCallsHistory:
         if self.envido: res += self.envido * self._bet_values[ENVIDO] # Envido can be called twice
         if self.real_envido: res += self._bet_values[REAL_ENVIDO]
 
+        else: return 1
+
         return res
     def return_truco_total_points_in_bet(self) -> int:
         # res: int = 0

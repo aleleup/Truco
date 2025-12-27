@@ -8,7 +8,6 @@ from constants.types import *
 async def send_players_status(game_desk:GameDesk, connection_manager: ConnectionManager):
     for id in [0,1]: 
             status: PlayerStatus = game_desk.player_status(id)
-            print("DEBUG", status)
             await connection_manager.send_to(id, json.dumps(status))
             await asyncio.sleep(0.2)
 
@@ -58,8 +57,16 @@ if __name__ == "main":
             await public_data_manager.disconnect(client_id)
 
     async def brodcast_public_data(connection_managger: ConnectionManager):
-        general_public_data:str = json.dumps(desk.get_general_view())
-        await connection_managger.broadcast(general_public_data)
+        general_data: PublicData = desk.get_general_view()
+        await connection_managger.broadcast(json.dumps(general_data))
+        
+        if general_data["round_winner"] != -1:
+            print("STARTING DANGEROUS RECURSION")
+            await asyncio.sleep(3)
+            desk.init_row()
+            await send_players_status(desk, players_middleware)
+            await brodcast_public_data(connection_managger) # NOW general_data["winner_id"] == -1
+
 
 
     desk: GameDesk = GameDesk()
