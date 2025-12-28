@@ -15,6 +15,9 @@ class BetCallsHistory:
             RE_TRUCO: 3,
             VALE_CUATRO: 4
         }
+        self.last_bet_accepted: bool = False
+        self.in_bet: bool = False
+
         self.latest: list[str] = []
         self.latest_by_id: dict[int, str] = {0: '', 1: ''}
     def upgrade_call(self, bet:list[str]):

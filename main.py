@@ -86,7 +86,6 @@ if __name__ == "main":
 
                 player_action: ActionPayload = json.loads(raw)
                 print("player action received: ", player_action)
-                print(type(player_action["card_index"]))
                 
                 new_action = PlayersActions(**player_action)
                 desk.receive_players_action(id, new_action)
@@ -94,7 +93,5 @@ if __name__ == "main":
                 await brodcast_public_data(public_data_manager)
         except WebSocketDisconnect:
             await players_middleware.disconnect(id)
-
-
 
 
