@@ -63,7 +63,7 @@ if __name__ == "main":
         if general_data["round_winner"] != -1:
             print("STARTING DANGEROUS RECURSION")
             await asyncio.sleep(3)
-            desk.init_row()
+            desk.init_round()
             await send_players_status(desk, players_middleware)
             await brodcast_public_data(connection_managger) # NOW general_data["winner_id"] == -1
 
@@ -78,7 +78,7 @@ if __name__ == "main":
 
         if players_middleware.connections_amount() == 2:
             print("THERE ARE TWO")
-            desk.init_row()
+            desk.init_round()
             await send_players_status(desk, players_middleware)
         try:
             while True:  # keep this socket alive forever

@@ -16,7 +16,8 @@ class GameDesk:
         self._player_1 = Player(1)
         self._hand_player: Player
         self._foot_player: Player
-
+        self._player_id_turn_saver: int
+        self._winner_id: int = -1
         # Bet status management:
         self._bet_calls: BetCallsHistory
         
@@ -26,12 +27,15 @@ class GameDesk:
         # self._turn_counter: int = 0
         self._round_winner_id: int = -1
 
-        self._game_over: bool = False
+
     #################### PUBLIC METHODS ####################
 
-    def init_row(self):
+    def init_round(self):
+        self._check_winner()
         self._round += 1
         self._round_winner_id = -1
+        self._player_id_turn_saver: int = -1
+
         self._bet_calls = BetCallsHistory()
         self._clear_public_data()
         new_row_cards: list[list[Card]] = self._deck.shuffle_cards()
@@ -61,8 +65,10 @@ class GameDesk:
                 print("CHECKING ROUND WINNER IF THERE IS ONE")
                 winner_id: int = self._compare_cards_and_return_winner() # returns -1 if none winner yet. else 0 or 1
                 self._set_turn_to_round_winner()
+                self._set_players_options()
                 if winner_id in [0,1]:
                     self._add_points_to_truco_winner(winner_id)
+                    self._check_winner()
                     self._round_winner_id = winner_id
                 return                       
         self._toggle_players_turn()
@@ -80,9 +86,9 @@ class GameDesk:
         
         return {
             'players_public_data': players_public_data, 
-            'game_over': self._game_over, 
             'round': self._round,
-            'round_winner': self._round_winner_id
+            'round_winner': self._round_winner_id,
+            'winner_id': self._winner_id
             }
 
     ########################################################
@@ -148,8 +154,13 @@ class GameDesk:
         self._foot_player.set_options(options)
 
     def _toggle_players_turn(self) -> None:
-        self._hand_player.toggle_turn()
-        self._foot_player.toggle_turn()
+        if not self._bet_calls.in_bet and self._player_id_turn_saver != -1:
+            self._get_player_by_id(self._player_id_turn_saver).set_turn(True)
+            self._get_player_by_id((self._player_id_turn_saver + 1) % 2).set_turn(False)
+            self._player_id_turn_saver = -1
+        else:
+            self._hand_player.toggle_turn()
+            self._foot_player.toggle_turn()
 
     def _set_turn_to_round_winner(self) -> None:
         last_card_0: Card = self._cards_on_the_desk[0][-1]
@@ -242,26 +253,36 @@ class GameDesk:
         else: return [self._foot_player, self._hand_player]
     
     def _add_to_bet_list(self, id: int, bet: list[str]) -> None:
-        if bet[1] == ABANDON:
+        if bet[1] == ABANDON or (bet == [TRUCO, DONT_ACCEPT]) :
             winner_id: int = (id + 1) % 2
             winner_player: Player = self._get_player_by_id(winner_id)
             if self._in_first_hand():
                 envido_points: int = self._bet_calls.return_envidos_total_points_in_bet()
                 winner_player.add_points(envido_points)
             self._add_points_to_truco_winner(winner_id)
+            self._check_winner()
             self._round_winner_id = winner_id
-            # self.init_row()
+            # self.init_round()
 
         if bet[1] in FINAL_ANSWER:
             self._bet_calls.in_bet = False
             self._bet_calls.last_bet_accepted = True # Need this so none envido options is shown
             if bet[0] == ENVIDO:
                 self._add_points_to_envido_winner()
-            # if self._bet_calls.latest[0] == TRUCO: Point will be added when the row finishes
+                self._check_winner()
         
         else:
+            if self._player_id_turn_saver == -1: self._player_id_turn_saver = id
             self._bet_calls.in_bet = True
-            self._bet_calls.upgrade_call(bet)
+            if bet[0] == TRUCO:
+                if not self._bet_calls.truco: 
+                    self._get_player_by_id(id).set_quiero(False)
+                    # Other player should keep TRUE as default at init_round
+                else: 
+                    self._player_0.toggle_quiero()
+                    self._player_1.toggle_quiero()
+
+        self._bet_calls.upgrade_call(bet)
         self._bet_calls.latest_by_id[id] = bet[1]
 
     def _get_player_by_id(self, id: int) -> Player:
@@ -282,3 +303,8 @@ class GameDesk:
         for i in self._cards_on_the_desk:
             self._cards_on_the_desk[i].clear()
             self._bet_calls.latest_by_id[i] = ''
+
+
+    def _check_winner(self) -> None:
+        for i in [0,1]:
+            if self._get_player_by_id(i).get_points() == 30: self._winner_id = i

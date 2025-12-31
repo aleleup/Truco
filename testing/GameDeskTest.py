@@ -53,7 +53,7 @@ class TestGameDesk(unittest.TestCase):
         
 
         desk: GameDesk = GameDesk()
-        desk.init_row()
+        desk.init_round()
 
         ### FST OPTIONS ###
         self._see_options_and_turns_assertions(desk, fst_options, 0)
@@ -122,7 +122,7 @@ class TestGameDesk(unittest.TestCase):
         }
 
         desk: GameDesk = GameDesk()
-        desk.init_row()
+        desk.init_round()
 
         ### FST OPTIONS ###
         self._see_options_and_turns_assertions(desk, fst_options, 0)
@@ -193,7 +193,7 @@ class TestGameDesk(unittest.TestCase):
         }
 
         desk: GameDesk = GameDesk()
-        desk.init_row()
+        desk.init_round()
 
         ### FST OPTIONS ###
         self._see_options_and_turns_assertions(desk, fst_options, 0)
@@ -272,7 +272,7 @@ class TestGameDesk(unittest.TestCase):
             TRUCO: TRUCO
         }
         desk: GameDesk = GameDesk()
-        desk.init_row()
+        desk.init_round()
         ### FST OPTIONS ###
         self._see_options_and_turns_assertions(desk, fst_options, 0)
         

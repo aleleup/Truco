@@ -25,7 +25,7 @@ class Player():
 
     def add_points(self, points: int):
         self._points += points
-        if self._points > 30: self.points = 30
+        if self._points > 30: self._points = 30
 
 
     def status(self, in_bet: bool) -> PlayerStatus:
