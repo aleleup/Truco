@@ -32,14 +32,13 @@ class BetCallsHistory:
         self.latest = bet
 
     def return_envidos_total_points_in_bet(self) -> int:
+        if not (self.envido or self.real_envido or self.falta_envido): return 1
         res: int = 0
         # if self.falta_envido: return res # Game desk handles this case appart
         if self.envido: res += self.envido * self._bet_values[ENVIDO] # Envido can be called twice
         if self.real_envido: res += self._bet_values[REAL_ENVIDO]
-
-        else: return 1
-
         return res
+    
     def return_truco_total_points_in_bet(self) -> int:
         # res: int = 0
         if self.vale_cuatro: return self._bet_values[VALE_CUATRO]
