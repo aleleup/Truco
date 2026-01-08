@@ -9,7 +9,8 @@ class Player():
         self._options: PlayerOptions = {}
         self._is_player_turn: bool = False
         self._can_throw_cards: bool = True
-        self._has_quiero: bool = True 
+        self._has_quiero: bool = True
+        self._bet_calls_amount: int = 0 # Needed for UXUI in front end  
 
     def _show_cards(self) -> list[dict[str, str | int]]: 
         res: list[dict[str, str | int]] = []
@@ -34,7 +35,6 @@ class Player():
             "points": self._points,
             "cards": self._show_cards(),
             "options": self._options,
-            "envido": self._total_envido,
             "is_player_turn": self._is_player_turn,
             "can_throw_cards": not in_bet,
             "has_quiero": self._has_quiero
@@ -96,8 +96,16 @@ class Player():
     def remove_card(self, i:int) -> Card:
         print(self._cards)
         return self._cards.pop(i)
+    
+    def set_bet_calls_amount(self, i: int) -> None: self._bet_calls_amount = i
+
+    def increase_bet_calls_amount(self) -> None: self._bet_calls_amount += 1
 #--------------------------------------------------
 # GETTERS
     def get_points(self) -> int: return self._points
 
     def get_id(self): return self._id
+
+    def get_bet_calls_amount(self) -> int: return self._bet_calls_amount
+
+

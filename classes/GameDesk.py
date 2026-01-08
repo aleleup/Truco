@@ -26,7 +26,7 @@ class GameDesk:
         self._round: int = -1
         # self._turn_counter: int = 0
         self._round_winner_id: int = -1
-
+        self._envido_winner_id: int = -1
 
     #################### PUBLIC METHODS ####################
 
@@ -35,7 +35,7 @@ class GameDesk:
         self._round += 1
         self._round_winner_id = -1
         self._player_id_turn_saver: int = -1
-
+        self._envido_winner_id = -1
         self._bet_calls = BetCallsHistory()
         self._clear_public_data()
         new_row_cards: list[list[Card]] = self._deck.shuffle_cards()
@@ -57,6 +57,7 @@ class GameDesk:
         
         
     def receive_players_action(self, id: int, player_action: PlayersActions) -> None:
+        if self._envido_winner_id != -1: self._envido_winner_id = -1
         if len(player_action.bet) > 0:
             self._add_to_bet_list(id, player_action.bet)
         elif player_action.card_index >= 0:
@@ -77,10 +78,14 @@ class GameDesk:
     def get_general_view(self) -> dict[str, list[PlayerPublicData] | bool | int]:
         players_public_data: list[PlayerPublicData] = []
         for i in [0, 1]:
+            player: Player = self._get_player_by_id(i)
             public_data: PlayerPublicData = {
                 'cards_on_desk': self._show_cards(self._cards_on_the_desk[i]),
                 'last_bet': self._bet_calls.latest_by_id[i],
-                'points': self._get_player_by_id(i).get_points()
+                'points': player.get_points(),
+                'envido': player.get_envido(),
+                'bet_calls_amount': player.get_bet_calls_amount()
+                
             }
             players_public_data.append(public_data)
         
@@ -88,7 +93,8 @@ class GameDesk:
             'players_public_data': players_public_data, 
             'round': self._round,
             'round_winner': self._round_winner_id,
-            'winner_id': self._winner_id
+            'winner_id': self._winner_id,
+            'envido_winner': self._envido_winner_id
             }
 
     ########################################################
@@ -239,6 +245,7 @@ class GameDesk:
             envido_winner.add_points(30 - envido_looser.get_points() )
         points: int = self._bet_calls.return_envidos_total_points_in_bet()
         envido_winner.add_points(points)
+        self._envido_winner_id = envido_winner.get_id() if self._bet_calls.latest[1] != DONT_ACCEPT else -1
 
     def _add_points_to_truco_winner(self, id: int):
         winner_player: Player = self._get_player_by_id(id)
@@ -284,6 +291,8 @@ class GameDesk:
 
         self._bet_calls.upgrade_call(bet)
         self._bet_calls.latest_by_id[id] = bet[1]
+        self._get_player_by_id(id).increase_bet_calls_amount()
+
 
     def _get_player_by_id(self, id: int) -> Player:
         if id == 0: return self._player_0

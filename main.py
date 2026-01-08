@@ -40,8 +40,8 @@ if __name__ == "main":
                     await websocket.receive_text()
                 
         except WebSocketDisconnect:
-            await host.disconnect(new_id)
-    
+            await host.shutdown()
+
 
     public_data_manager: ConnectionManager = ConnectionManager(2)
     @app.websocket("/public-view/{client_id}")
@@ -54,18 +54,23 @@ if __name__ == "main":
                 await websocket.receive_text()
                 
         except WebSocketDisconnect:
-            await public_data_manager.disconnect(client_id)
+            await public_data_manager.shutdown()
+            restart_desk_and_middleware()
 
     async def brodcast_public_data(connection_managger: ConnectionManager):
         general_data: PublicData = desk.get_general_view()
         await connection_managger.broadcast(json.dumps(general_data))
         
+
+        if general_data["winner_id"] != -1:
+            return restart_desk_and_middleware()
+
         if general_data["round_winner"] != -1:
             print("STARTING DANGEROUS RECURSION")
             await asyncio.sleep(3)
             desk.init_round()
             await send_players_status(desk, players_middleware)
-            await brodcast_public_data(connection_managger) # NOW general_data["winner_id"] == -1
+            await brodcast_public_data(connection_managger) # NOW general_data["round_winner"] == -1
 
 
 
@@ -92,6 +97,11 @@ if __name__ == "main":
                 await send_players_status(desk, players_middleware)
                 await brodcast_public_data(public_data_manager)
         except WebSocketDisconnect:
-            await players_middleware.disconnect(id)
+            await players_middleware.shutdown()
+            restart_desk_and_middleware()
 
-
+    def restart_desk_and_middleware():
+        global desk, players_middleware, public_data_manager
+        desk = GameDesk()
+        players_middleware = ConnectionManager(2)
+        public_data_manager = ConnectionManager(2)
