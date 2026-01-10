@@ -1,3 +1,10 @@
-# Truco
-Truco made to get better in programming and practice english.
-AI Only helps with the syntaxis and methods of sqlalchemy and fastApi.
+# Truco Back End:
+Python project that handles the logic of the best argentian game ever.
+
+Just to learn and to keep awake
+
+## Core technologies:
+- FastApi & web-sockets
+- OOP 
+
+
