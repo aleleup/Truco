@@ -94,7 +94,6 @@ class Player():
     def toggle_quiero(self) -> None: self._has_quiero = not self._has_quiero
 
     def remove_card(self, i:int) -> Card:
-        print(self._cards)
         return self._cards.pop(i)
     
     def set_bet_calls_amount(self, i: int) -> None: self._bet_calls_amount = i

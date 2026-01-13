@@ -65,12 +65,15 @@ class GameDesk:
             if len(self._cards_on_the_desk[0]) == len(self._cards_on_the_desk[1]):
                 print("CHECKING ROUND WINNER IF THERE IS ONE")
                 winner_id: int = self._compare_cards_and_return_winner() # returns -1 if none winner yet. else 0 or 1
-                self._set_turn_to_round_winner()
-                self._set_players_options()
+                print("DEBUG WINNER ID", winner_id)
                 if winner_id in [0,1]:
-                    self._add_points_to_truco_winner(winner_id)
+                    winner_player: Player = self._get_player_by_id(winner_id)
+                    winner_player.add_points(self._bet_calls.return_truco_accepted_points())                   
                     self._check_winner()
                     self._round_winner_id = winner_id
+                else:
+                    self._set_turn_to_round_winner()
+                    self._set_players_options()
                 return                       
         self._toggle_players_turn()
         self._set_players_options()
@@ -122,8 +125,6 @@ class GameDesk:
         res: PlayerOptions = {}
         envido_options: list[str] = []
         truco_option: list[str] = [TRUCO]
-        print("DEBUG IN FIRST HAND", self._in_first_hand(), self._cards_on_the_desk)
-
         if self._in_first_hand() and not self._bet_calls.last_bet_accepted : # if hand is 1 and there were no truco bet accepted:
             envido_options = [ENVIDO, REAL_ENVIDO, FALTA_ENVIDO]
             if self._bet_calls.envido == 2:
@@ -146,7 +147,6 @@ class GameDesk:
             if self._bet_calls.latest[0] == TRUCO: truco_option += [ACCEPT, DONT_ACCEPT]
             if self._bet_calls.latest[0] == ENVIDO: envido_options += [ACCEPT, DONT_ACCEPT]
         
-        print("ENVIDO_OPTIONS", envido_options)
         res[TRUCO] = truco_option
         res[ENVIDO] = envido_options
         res[ABANDON] = [ABANDON]
@@ -211,6 +211,7 @@ class GameDesk:
                     fst_hand_winner = 1
                 else:
                     tie_on_fst_hand = True
+                print("DEBUG FIRST HAND DATA: ", hands_by_0, hands_by_1, fst_hand_winner, tie_on_fst_hand)
             else:
                 if tie_on_fst_hand:
                     if self._has_greater_card_value_at_index(0, 1, card_index): return 0
@@ -219,11 +220,13 @@ class GameDesk:
                 # else:
                 if self._has_greater_card_value_at_index(0, 1, card_index): 
                     hands_by_0 += 1
-                if self._has_greater_card_value_at_index(1, 0, card_index): 
+                elif self._has_greater_card_value_at_index(1, 0, card_index): 
                     hands_by_1 += 1
+                
                 else: # TIE:
                     if fst_hand_winner == 0: return 0
                     if fst_hand_winner == 1: return 1
+                print("DEBUG OTHER HAND DATA: ", hands_by_0, hands_by_1 )
 
         if hands_by_0 > 1 and hands_by_0 > hands_by_1: return 0
         if hands_by_1 > 1 and hands_by_1 > hands_by_0: return 1
@@ -232,7 +235,6 @@ class GameDesk:
         return -1
 
     def _has_greater_card_value_at_index(self, x:int, y:int, card_index: int) -> bool: 
-        '''PC RESTARTING NOW!!!'''
         return self._cards_on_the_desk[x][card_index].value > self._cards_on_the_desk[y][card_index].value
 
     ################################################
@@ -243,13 +245,10 @@ class GameDesk:
         envido_winner, envido_looser = self._compare_envidos_return_winner_and_looser()
         if self._bet_calls.latest[1] == FALTA_ENVIDO:
             envido_winner.add_points(30 - envido_looser.get_points() )
-        points: int = self._bet_calls.return_envidos_total_points_in_bet()
+        points: int = self._bet_calls.return_envido_accepted_points()
         envido_winner.add_points(points)
         self._envido_winner_id = envido_winner.get_id() if self._bet_calls.latest[1] != DONT_ACCEPT else -1
 
-    def _add_points_to_truco_winner(self, id: int):
-        winner_player: Player = self._get_player_by_id(id)
-        winner_player.add_points(self._bet_calls.return_truco_total_points_in_bet())
 
 
     def _compare_envidos_return_winner_and_looser(self) -> list[Player]:
@@ -263,10 +262,11 @@ class GameDesk:
         if bet[1] == ABANDON or (bet == [TRUCO, DONT_ACCEPT]) :
             winner_id: int = (id + 1) % 2
             winner_player: Player = self._get_player_by_id(winner_id)
-            if self._in_first_hand():
-                envido_points: int = self._bet_calls.return_envidos_total_points_in_bet()
+            if self._in_first_hand() and not self._bet_calls.was_envido_played: # or envido wasn't played
+                envido_points: int = self._bet_calls.return_envido_accepted_points()
                 winner_player.add_points(envido_points)
-            self._add_points_to_truco_winner(winner_id)
+            if bet == [TRUCO, DONT_ACCEPT]: winner_player.add_points(self._bet_calls.return_truco_not_accepted_points())
+            else:  winner_player.add_points(self._bet_calls.return_truco_accepted_points())
             self._check_winner()
             self._round_winner_id = winner_id
             # self.init_round()
@@ -275,7 +275,8 @@ class GameDesk:
             self._bet_calls.in_bet = False
             self._bet_calls.last_bet_accepted = True # Need this so none envido options is shown
             if bet[0] == ENVIDO:
-                self._add_points_to_envido_winner()
+                if bet[1] == ACCEPT: self._add_points_to_envido_winner()
+                else: self._get_player_by_id((id + 1) % 2).add_points(self._bet_calls.return_envido_not_accepted_points())
                 self._check_winner()
         
         else:

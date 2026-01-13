@@ -66,7 +66,7 @@ if __name__ == "main":
             return restart_desk_and_middleware()
 
         if general_data["round_winner"] != -1:
-            print("STARTING DANGEROUS RECURSION")
+            # STARTING DANGEROUS RECURSION
             await asyncio.sleep(3)
             desk.init_round()
             await send_players_status(desk, players_middleware)

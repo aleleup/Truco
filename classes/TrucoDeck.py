@@ -4,7 +4,7 @@ from classes.Card import Card
 from random import randint
 class TrucoDeck:
     def __init__(self) -> None:
-        self.cards: list[Card] = []
+        self._cards: list[Card] = []
         
     def _calc_card_num(self, i: int) -> int:
         if i == 1:
@@ -37,7 +37,7 @@ class TrucoDeck:
     def _add_to_deck(self, type_list: list[str], card_num:int, card_value: int, envido_value: int):
         for type in type_list:
             new_card: Card = Card(card_num, type, card_value, envido_value)
-            self.cards.append(new_card)
+            self._cards.append(new_card)
 
     def create_deck(self) -> None:
         '''logic_vals of cards:
@@ -97,11 +97,10 @@ class TrucoDeck:
         for players_card in response:
             i: int = 0
             while i < 3:
-                card_index: int = randint(0, len(self.cards) - 1)
-                print(card_index, cards_index_in_use)
+                card_index: int = randint(0, len(self._cards) - 1)
                 if card_index not in cards_index_in_use:
                     cards_index_in_use.append(card_index)
-                    players_card.append(self.cards[card_index])
+                    players_card.append(self._cards[card_index])
                     i+=1
 
         return response
