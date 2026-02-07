@@ -13,6 +13,10 @@ async def send_players_status(game_desk:GameDesk, connection_manager: Connection
             await connection_manager.send_to(id, json.dumps(status))
             await asyncio.sleep(0.2)
 
+def keys(d: dict[int, ConnectionManager]) -> list[int]:
+    res: list[int] = []
+    for key in d: res.append(key)
+    return res
 
 ####### USAGE OF WEB-SOCKETS #######
 if __name__ == "main":
@@ -32,9 +36,10 @@ if __name__ == "main":
 
     @app.get("/store-session-id/{session}")
     async def store_session_id(session: int):
+        print("[INFO] SESSION ARRIVED: ", session)
         if session not in host_per_session:
             host_per_session[session] = ConnectionManager(2)
-        return {"message": "session already stored"}
+        return {"message": "session stored"}
 
     ### KEEP CLIENTS IN LOBBY UNTIL TWO PLAYERS ARE CONNECTED (There's no need to use databases for this logic now)
     @app.websocket("/enter-lobby/{session}/{id}")
@@ -52,16 +57,18 @@ if __name__ == "main":
                 private_manager_per_session[session] = ConnectionManager(2)
                 await host.broadcast(json.dumps({"allow_access": True}))
 
+
                 # Give the OS time to flush frames --> AI HELP
                 await asyncio.sleep(0.2)
 
-                await host.shutdown()
+                # await host.shutdown()
+                del host_per_session[session]
                 return
             while True:
                 if websocket.client_state.name == "CONNECTED":
                     await websocket.receive_text()
                 
-        except WebSocketDisconnect:
+        except (WebSocketDisconnect and RuntimeError):
             await host.shutdown()
 
 
@@ -130,6 +137,13 @@ if __name__ == "main":
             delete_desk_and_manager_at_session(session)
 
     def delete_desk_and_manager_at_session(session: int):
-        del desk_per_session[session]
-        del public_manager_per_session[session]
-        del private_manager_per_session[session]
+        if session in desk_per_session: del desk_per_session[session]
+        if session in public_manager_per_session: del public_manager_per_session[session]
+        if session in private_manager_per_session: del private_manager_per_session[session]
+    
+    @app.get("/check-dicts/")
+    def check_dict():
+        host_keys: list[int] = keys(host_per_session)
+        playground_keys: list[int] =  keys(public_manager_per_session)
+
+        return {"host_keys": host_keys, "playground_keys": playground_keys} 

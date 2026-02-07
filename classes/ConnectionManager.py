@@ -23,9 +23,10 @@ class ConnectionManager:
 
     async def disconnect(self, client_id: int):
         ws: WebSocket = self._active_connections[client_id]
-        if self.is_websocket_connected(ws):    
+        try: # Got tired of errors while disconnecting socket.
             await ws.close()
             self._connections -= 1
+        except Exception as e: print("AI help got weird", e)
 
     async def send_to(self, client_id: int, message: str):
 
